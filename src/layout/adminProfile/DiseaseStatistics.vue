@@ -18,15 +18,6 @@
 
         <el-col :span="12">
           <div class="chart-container">
-            <h2>浏览记录时间分布</h2>
-            <ECharts :options="visitTimeOptions" />
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20">
-        <el-col :span="24">
-          <div class="chart-container">
             <h2>疾病浏览次数统计</h2>
             <ECharts :options="diseaseVisitOptions" />
           </div>
@@ -66,15 +57,14 @@
 import { ref, onMounted } from "vue";
 import ECharts from "@/components/Echarts/ECharts.vue";
 import { reqGetUserList } from "@/api/user/index.ts";
-import { reqIllnessList } from "@/api/news/index.ts";
+import { reqIllnessList, reqHasNewsList } from "@/api/news/index.ts";
 
 // Chart options refs
 const diseaseCategoryOptions = ref({});
-const visitTimeOptions = ref({});
 const diseaseVisitOptions = ref({});
-const genderOptions = ref(null);
-const ageOptions = ref(null);
-const registrationOptions = ref(null);
+const genderOptions = ref({});
+const ageOptions = ref({});
+const registrationOptions = ref({});
 
 // Fetch data on component mount
 onMounted(() => {
@@ -84,68 +74,87 @@ onMounted(() => {
 
 // Fetch disease statistics
 const fetchDiseaseData = () => {
-  reqIllnessList(1, 2).then((response) => {
+  reqHasNewsList().then((response) => {
     const data = response.data;
     console.log("疾病数据：", data);
+
+    //疾病类别数量统计
+    const diseaseCategoryCount = processDiseaseCategoryData(data);
+    initDiseaseCategoryChart(diseaseCategoryCount);
+
+    // 每个疾病浏览次数统计
+    const diseaseVisitCount = processDiseaseVisitData(data);
+    console.log("疾病浏览次数统计：", diseaseVisitCount);
+    initDiseaseVisitChart(diseaseVisitCount);
   });
 
-  diseaseCategoryOptions.value = {
-    title: { text: "疾病类别数量统计" },
-    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    xAxis: { type: "category", data: ["类别1", "类别2", "类别3", "类别4", "类别5"] },
-    yAxis: { type: "value" },
-    series: [{ data: [5, 6, 3, 4, 2], type: "bar" }],
+  const processDiseaseCategoryData = (data: any) => {
+    const categoryCount = data.illness.reduce((acc: any, illness: any) => {
+      acc[illness.kindName] = (acc[illness.kindName] || 0) + 1;
+      return acc;
+    }, {});
+    return categoryCount;
   };
 
-  visitTimeOptions.value = {
-    title: { text: "浏览记录时间分布" },
-    tooltip: { trigger: "axis" },
-    xAxis: {
-      type: "category",
-      data: [
-        "00:00",
-        "02:00",
-        "04:00",
-        "06:00",
-        "08:00",
-        "10:00",
-        "12:00",
-        "14:00",
-        "16:00",
-        "18:00",
-        "20:00",
-        "22:00",
-      ],
-    },
-    yAxis: { type: "value" },
-    series: [{ data: [12, 8, 5, 6, 10, 15, 20, 14, 10, 8, 7, 12], type: "line" }],
-  };
-
-  diseaseVisitOptions.value = {
-    title: { text: "疾病浏览次数统计", left: "center" },
-    tooltip: { trigger: "item" },
-    legend: { orient: "vertical", left: "left" },
-    series: [
-      {
-        name: "浏览次数",
-        type: "pie",
-        radius: "50%",
-        data: [
-          { value: 10, name: "病毒性感冒" },
-          { value: 8, name: "风寒感冒" },
-          { value: 6, name: "扁桃体发炎" },
-          { value: 4, name: "偏头痛" },
-          { value: 2, name: "便秘" },
-        ],
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: "rgba(0, 0, 0, 0.5)",
-          },
+  const initDiseaseCategoryChart = (data: any) => {
+    diseaseCategoryOptions.value = {
+      title: { text: "疾病类别数量统计" },
+      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      xAxis: {
+        type: "category",
+        data: Object.keys(data),
+        axisLabel: {
+          interval: 0, // 显示所有标签
         },
       },
-    ],
+      yAxis: { type: "value" },
+      series: [{ data: Object.values(data), type: "bar" }],
+    };
+  };
+
+  // 处理每个疾病浏览数据
+  const processDiseaseVisitData = (data: any) => {
+    const visitCount = data.illness.reduce(
+      (acc: { [key: string]: number }, illness: any) => {
+        acc[illness.illness_name] = (acc[illness.illness_name] || 0) + illness.pageview;
+        return acc;
+      },
+      {}
+    );
+    return visitCount;
+  };
+
+  // 初始化疾病浏览次数散点图
+  const initDiseaseVisitChart = (data: any) => {
+    const scatterData = Object.entries(data).map(([name, value]) => ({
+      name,
+      value,
+    }));
+
+    diseaseVisitOptions.value = {
+      title: { text: "疾病浏览次数统计", left: "center" },
+      tooltip: {
+        trigger: "item",
+        formatter: "{b}: {c} 次浏览", // Tooltip format for scatter points
+      },
+      xAxis: {
+        type: "category",
+        data: scatterData.map((item) => item.name),
+        axisLabel: { rotate: 45, interval: 0 }, // Rotate for better readability
+      },
+      yAxis: { type: "value", name: "浏览次数" },
+      series: [
+        {
+          name: "浏览次数",
+          type: "scatter",
+          data: scatterData.map((item) => item.value),
+          symbolSize: (value: number) => value * 3, // Scale the size of the points
+          itemStyle: {
+            color: "#5470C6",
+          },
+        },
+      ],
+    };
   };
 };
 
@@ -252,7 +261,11 @@ const initGenderChart = (genderStats: any) => {
 const initAgeChart = (ageStats: any) => {
   ageOptions.value = {
     title: { text: "用户年龄分布" },
-    xAxis: { type: "category", data: ageStats.map((item: any) => item.age_range) },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    xAxis: {
+      type: "category",
+      data: ageStats.map((item: any) => item.age_range),
+    },
     yAxis: { type: "value" },
     series: [{ data: ageStats.map((item: any) => item.count), type: "bar" }],
   };
@@ -262,27 +275,25 @@ const initAgeChart = (ageStats: any) => {
 const initRegistrationChart = (monthlyRegistration: any) => {
   registrationOptions.value = {
     title: { text: "每月注册用户数量" },
-    xAxis: { type: "category", data: monthlyRegistration.map((item: any) => item.month) },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    xAxis: {
+      type: "category",
+      data: monthlyRegistration.map((item: any) => item.month),
+    },
     yAxis: { type: "value" },
-    series: [{ data: monthlyRegistration.map((item: any) => item.count), type: "line" }],
+    series: [{ data: monthlyRegistration.map((item: any) => item.count), type: "bar" }],
   };
 };
 </script>
 
 <style scoped>
 .page-title {
-  text-align: center;
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
 
 .chart-container {
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-}
-
-h2 {
-  text-align: center;
+  width: 100%;
+  height: 400px;
+  margin-bottom: 20px;
 }
 </style>
