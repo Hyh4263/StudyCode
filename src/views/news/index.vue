@@ -31,6 +31,17 @@
             </el-card>
           </el-col>
         </el-row>
+        <!-- 分页器 -->
+        <el-pagination
+          @current-change="getIllnesses"
+          @size-change="sizeChange"
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[3, 5, 7, 9]"
+          :background="true"
+          layout="prev, pager, next, jumper, ->, sizes, total"
+          :total="total"
+        />
       </el-main>
       <Footer></Footer>
     </el-container>
@@ -41,34 +52,42 @@
 import { ref, onMounted } from "vue";
 import Header from "@/components/header/index.vue";
 import Footer from "@/components/footer/index.vue";
-import { reqHasNewsList } from "@/api/news";
+import { reqIllnessList } from "@/api/news";
 
 const pageTitle = ref("全部");
-const newsItems: any = ref([]);
+const newsItems = ref<any[]>([]);
 
-const fetchNewsList = async () => {
-  try {
-    const response: any = await reqHasNewsList();
-    if (response.code === 200 && response.data) {
-      pageTitle.value = response.data.title;
-      newsItems.value = response.data.illness.map((item: any) => ({
-        id: item.id,
-        title: item.illness_name,
-        description: item.include_reason,
-        date: new Date(item.update_time).toLocaleDateString(),
-        category: item.kindName,
-        views: item.pageview,
-      }));
-    } else {
-      console.error("Error fetching news items: ", response.message);
-    }
-  } catch (error) {
-    console.error("Error fetching news items:", error);
+const currentPage = ref(1);
+const pageSize = ref(5);
+const total = ref<number>(0);
+
+// 分页器
+const sizeChange = (newSize: number) => {
+  pageSize.value = newSize;
+  currentPage.value = 1;
+  getIllnesses();
+};
+
+// 获取疾病列表
+const getIllnesses = async (page = 1) => {
+  currentPage.value = page;
+  const result: any = await reqIllnessList(currentPage.value, pageSize.value);
+  console.log("疾病列表数据", result);
+  if (result.code === 200) {
+    total.value = result.data.totalElements;
+    newsItems.value = result.data.illness.map((item: any) => ({
+      id: item.id,
+      title: item.illness_name,
+      description: item.include_reason,
+      date: new Date(item.update_time).toLocaleDateString(),
+      category: item.kindName,
+      views: item.pageview,
+    }));
   }
 };
 
 onMounted(() => {
-  fetchNewsList();
+  getIllnesses();
 });
 </script>
 
