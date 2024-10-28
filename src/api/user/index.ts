@@ -23,6 +23,8 @@ enum API {
     GET_ROLE_LIST = "/role/list",
     GET_ROLE_LIST_BY_ID = "/role/getRoleById",
 
+    changeAvatar = "/api/user/changeAvatar",
+
 
 
 
@@ -45,3 +47,5 @@ export const reqUpdatedUserInfo = (data: any) => request.post<any, any>(API.UPDA
 export const reqUpdatedPwd = (data: any) => request.post<any, any>(API.UPDATEDPWD_URL, data);
 // 获取用户列表
 export const reqGetUserList = () => request.get<any, any>(API.GET_USER_LIST);
+// 更换用户头像
+export const reqChangeAvatar = (data: any) => request.post<any, any>(API.changeAvatar, data);

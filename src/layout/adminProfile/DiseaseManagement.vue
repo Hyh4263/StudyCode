@@ -131,7 +131,7 @@ import {
   reqAddOrUpdateIllness,
   reqDeleteIllnessById,
   reqIllnessKindList,
-} from "@/api/news/index";
+} from "@/api/illness/index";
 import { ElNotification } from "element-plus";
 
 const rules = {
@@ -191,7 +191,12 @@ const sizeChange = (newSize: number) => {
 const truncatedText = (text: string) =>
   text.length > 10 ? text.slice(0, 10) + "..." : text;
 
-const splitText = (text: string) => text.split(";").map((s) => s.trim());
+const splitText = (text: string | null | undefined) => {
+  if (!text) {
+    return [""]; // 返回一个包含空字符串的数组
+  }
+  return text.split(";").map((s) => s.trim());
+};
 
 // 时间格式化
 const formatTime = (timeString: string): string => {

@@ -1,6 +1,26 @@
 <template>
   <div class="header-content">
-    <Logo></Logo>
+    <Logo />
+
+    <!-- Search Bar with Button moved near Logo -->
+    <div class="search-container">
+      <el-input
+        v-model="searchQuery"
+        placeholder="Search..."
+        class="search-input"
+        prefix-icon="Search"
+        clearable
+        @keyup.enter="handleSearch"
+      >
+        <!-- Search Button -->
+        <template #append>
+          <el-button class="search-button" type="primary" @click="handleSearch">
+            搜索
+          </el-button>
+        </template>
+      </el-input>
+    </div>
+
     <el-menu
       collapse="false"
       class="nav-menu"
@@ -8,57 +28,76 @@
       :router="true"
       ellipsis="false"
     >
-      <el-menu-item index="search" class="search-icon">
-        <el-icon>
-          <Search />
-        </el-icon>
-      </el-menu-item>
-      <el-menu-item v-for="item in menuItems" :key="item.index" :index="item.index">
-        <router-link :to="item.index">{{ item.label }}</router-link>
+      <el-menu-item
+        v-for="item in menuItems"
+        :key="item.index"
+        :index="item.index"
+        @click="navigateTo(item.index)"
+      >
+        {{ item.label }}
       </el-menu-item>
     </el-menu>
 
-    <div v-if="!isLoggedIn">
-      <router-link to="/user/login">
-        <el-button type="primary" plain>登录</el-button>
-      </router-link>
-      <router-link to="/user/register">
-        <el-button type="primary">注册</el-button>
-      </router-link>
+    <!-- User Login/Logout -->
+    <div v-if="!isLoggedIn" class="login-buttons">
+      <el-button type="primary" plain @click="goToLogin">登录</el-button>
+      <el-button type="primary" @click="goToRegister">注册</el-button>
     </div>
-    <loginUser v-if="isLoggedIn" style="margin-left: 100px"></loginUser>
+    <loginUser v-if="isLoggedIn" style="margin-left: 100px" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { Search } from "@element-plus/icons-vue";
+import { ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import Logo from "@/components/logo/index.vue";
 import loginUser from "./loginUser.vue";
-import { ref, onMounted } from "vue";
 import useUserStore from "@/stores/modules/user";
+import { Search } from "@element-plus/icons-vue";
 
+const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 const isLoggedIn = ref(false);
+const searchQuery = ref("");
 
+// Define menu items
 const menuItems = ref([
   { index: "/", label: "Home" },
   { index: "/health", label: "Health" },
   { index: "/medicine", label: "Medicine" },
-  { index: "/news", label: "News" },
+  { index: "/illness", label: "Illness" },
   { index: "/client", label: "Client" },
 ]);
 
+// Check if the user is logged in
 onMounted(() => {
-  // 初始化时检查用户数据
-  if (localStorage.getItem("TOKEN")) {
-    isLoggedIn.value = true;
-  }
+  isLoggedIn.value = !!localStorage.getItem("TOKEN");
 });
-</script>
 
-<script lang="ts">
-export default {
-  name: "Header",
+// Set initial query based on the current route query parameter
+searchQuery.value = route.query.keyword ? route.query.keyword.toString() : "";
+
+// Handle search functionality
+const handleSearch = () => {
+  const trimmedQuery = searchQuery.value.trim();
+  if (trimmedQuery) {
+    router.push({ path: "/search", query: { keyword: trimmedQuery } });
+  }
+};
+
+// Navigation method
+const navigateTo = (path: string) => {
+  router.push(path);
+};
+
+// Methods for login and register buttons
+const goToLogin = () => {
+  router.push("/user/login");
+};
+
+const goToRegister = () => {
+  router.push("/user/register");
 };
 </script>
 
@@ -75,17 +114,32 @@ export default {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+}
 
-  .el-menu-item {
-    padding: 0 10px;
+.search-container {
+  display: flex;
+  align-items: center;
+  margin-left: 20%;
+}
 
-    .router-link-active {
-      color: #00bfa5;
-    }
-  }
+.search-input {
+  width: 400px;
+}
 
-  .search-icon {
-    margin-left: "30px";
-  }
+.search-button {
+  background-color: #00bfa5;
+  color: white;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.search-button:hover {
+  background-color: #009688;
+}
+
+.login-buttons {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
 }
 </style>

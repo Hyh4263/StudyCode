@@ -31,14 +31,14 @@ const router = createRouter({
     },
 
     {
-      path: "/news",
-      name: "news",
-      component: () => import("@/views/news/index.vue"),
+      path: "/illness",
+      name: "illness",
+      component: () => import("@/views/illness/index.vue"),
     },
     {
-      path: "/news/:id",
-      name: "newsDetail",
-      component: () => import("@/views/news/detail/index.vue"),
+      path: "/illness/:id",
+      name: "illnessDetail",
+      component: () => import("@/views/illness/detail/index.vue"),
     },
     // {
     //   path: '/user/index',
@@ -70,7 +70,13 @@ const router = createRouter({
     {
       path: "/user/echarts",
       name: "Echarts",
-      component: () => import("@/layout/adminProfile/DiseaseStatistics.vue"),
+      component: () => import("@/layout/adminProfile/EchartStatistics.vue"),
+    },
+
+    {
+      path: "/search",
+      name: "Search",
+      component: () => import("@/views/search/index.vue"),
     },
   ],
 });

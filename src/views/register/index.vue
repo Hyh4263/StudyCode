@@ -10,56 +10,91 @@
         >
           <h1>注册</h1>
           <h2>欢迎加入药品甄选</h2>
+
           <el-form-item prop="userAccount">
             <el-input
               :prefix-icon="User"
-              v-model="registerForm.userAccount"
+              v-model.trim="registerForm.userAccount"
               placeholder="账号"
             ></el-input>
           </el-form-item>
-          <el-form-item prop="username">
+
+          <el-form-item prop="userName">
             <el-input
               :prefix-icon="User"
-              v-model="registerForm.userName"
+              v-model.trim="registerForm.userName"
               placeholder="用户名"
             ></el-input>
           </el-form-item>
-          <el-form-item prop="email">
+
+          <el-form-item prop="userEmail">
+            <div class="input-group">
+              <div>
+                <el-input
+                  v-model.trim="registerForm.userEmail"
+                  placeholder="邮箱"
+                  @blur="validateEmail"
+                  class="fixed-width"
+                ></el-input>
+              </div>
+              <div>
+                <el-button :disabled="isGettingCode" @click="getEmailCode">
+                  {{ isGettingCode ? `重新获取验证码 (${countdown})` : "获取邮箱验证码" }}
+                </el-button>
+              </div>
+            </div>
+          </el-form-item>
+
+          <el-form-item prop="userSex">
+            <el-select
+              v-model="registerForm.userSex"
+              placeholder="性别"
+              class="fixed-width"
+            >
+              <el-option label="男" value="male"></el-option>
+              <el-option label="女" value="female"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item prop="userTel">
             <el-input
-              v-model="registerForm.userEmail"
-              placeholder="邮箱"
-              @blur="validateEmail"
+              v-model.trim="registerForm.userTel"
+              placeholder="电话"
+              class="fixed-width"
             ></el-input>
           </el-form-item>
-          <el-form-item>
-            <el-button :disabled="isGettingCode" @click="getEmailCode">
-              {{ isGettingCode ? `重新获取验证码 (${countdown})` : "获取邮箱验证码" }}
-            </el-button>
-          </el-form-item>
+
           <el-form-item prop="code">
-            <el-input v-model="registerForm.code" placeholder="验证码"></el-input>
+            <el-input v-model.trim="registerForm.code" placeholder="验证码"></el-input>
           </el-form-item>
-          <el-form-item prop="realAge">
-            <el-input v-model="registerForm.userAge" placeholder="真实年龄"></el-input>
+
+          <el-form-item prop="userAge">
+            <el-input
+              v-model.number="registerForm.userAge"
+              placeholder="真实年龄"
+            ></el-input>
           </el-form-item>
-          <el-form-item prop="password">
+
+          <el-form-item prop="userPwd">
             <el-input
               type="password"
               :prefix-icon="Lock"
-              v-model="registerForm.userPwd"
+              v-model.trim="registerForm.userPwd"
               show-password
               placeholder="密码"
             ></el-input>
           </el-form-item>
+
           <el-form-item prop="confirmPassword">
             <el-input
               type="password"
               :prefix-icon="Lock"
-              v-model="registerForm.confirmPassword"
+              v-model.trim="registerForm.confirmPassword"
               show-password
               placeholder="确认密码"
             ></el-input>
           </el-form-item>
+
           <el-form-item>
             <el-button
               :loading="loading"
@@ -67,8 +102,9 @@
               size="default"
               class="register_btn"
               @click="register"
-              >注册</el-button
             >
+              注册
+            </el-button>
           </el-form-item>
         </el-form>
       </el-main>
@@ -79,40 +115,48 @@
 <script setup lang="ts">
 import { User, Lock } from "@element-plus/icons-vue";
 import { reactive, ref } from "vue";
-import { ElNotification } from "element-plus";
+import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import useUserStore from "@/stores/modules/user";
 import { reqSendEmailCode, reqRegister } from "@/api/user/index";
 
-let loading = ref(false);
-let isGettingCode = ref(false);
-let countdown = ref(60);
-let $router = useRouter();
-let useStore = useUserStore();
+const loading = ref(false);
+const isGettingCode = ref(false);
+const countdown = ref(60);
+const $router = useRouter();
+const useStore = useUserStore();
 
-let registerForm = reactive({
-  // userAccount: '',
-  // userName: '',
-  // email: '',
-  // code: '',
-  // userAge: '',
-  // userPwd: '',
+const registerForm = reactive({
+  imgPath: "",
   confirmPassword: "",
   userAccount: "",
   userName: "",
   userPwd: "",
   userAge: "",
   code: "",
-  userSex: "",
   userEmail: "",
+  userSex: "",
+  userTel: "",
 });
 
-let registerForms = ref();
+const avatarImages = [
+  "/images/userImg/img_0.png",
+  "/images/userImg/img_1.png",
+  "/images/userImg/img_2.png",
+  "/images/userImg/img_3.png",
+  "/images/userImg/img_4.png",
+  "/images/userImg/img_5.png",
+  "/images/userImg/img_6.png",
+  "/images/userImg/img_7.png",
+  "/images/userImg/img_8.png",
+];
+
+const registerForms = ref();
 
 const startCountdown = () => {
   isGettingCode.value = true;
   countdown.value = 60;
-  let interval = setInterval(() => {
+  const interval = setInterval(() => {
     countdown.value -= 1;
     if (countdown.value <= 0) {
       clearInterval(interval);
@@ -122,47 +166,34 @@ const startCountdown = () => {
 };
 
 const validateEmail = async () => {
-  await registerForms.value.validateField("email");
+  await registerForms.value.validateField("userEmail");
 };
 
 const getEmailCode = async () => {
   if (!registerForm.userEmail) {
-    ElNotification({
-      type: "error",
-      message: "请输入邮箱后获取验证码",
-    });
+    ElMessage.error("请输入邮箱后获取验证码");
     return;
   }
 
   try {
-    // Call your API to send the email code
-    let res = await reqSendEmailCode(registerForm.userEmail);
-    // console.log(res);
+    const res = await reqSendEmailCode(registerForm.userEmail);
     if (res.code === 200) {
-      ElNotification({
-        type: "success",
-        message: "验证码已发送至您的邮箱",
-      });
+      ElMessage.success("验证码已发送至您的邮箱");
       startCountdown();
     } else {
-      ElNotification({
-        type: "error",
-        message: "获取验证码失败，请重试",
-      });
+      ElMessage.error("获取验证码失败，请重试");
     }
   } catch (error) {
-    ElNotification({
-      type: "error",
-      message: "获取验证码失败，请重试",
-    });
+    ElMessage.error("获取验证码失败，请重试");
   }
 };
 
+// Validator functions
 const validatorUserName = (_rule: any, value: any, callback: any) => {
-  if (value.length >= 5) {
+  if (value.length >= 2) {
     callback();
   } else {
-    callback(new Error("账号长度至少五位"));
+    callback(new Error("账号长度至少2位"));
   }
 };
 
@@ -191,36 +222,42 @@ const validatorConfirmPassword = (_rule: any, value: any, callback: any) => {
   }
 };
 
-const register = async () => {
-  await registerForms.value.validate();
-  loading.value = true;
-  let res = await reqRegister(registerForm);
-  if (res.code == 200 && res.data != null) {
-    ElNotification({
-      type: "success",
-      message: "注册成功，欢迎加入",
-      title: "注册成功",
-    });
+const selectRandomAvatar = () => {
+  const randomAvatar = avatarImages[Math.floor(Math.random() * avatarImages.length)];
+  registerForm.imgPath = randomAvatar;
+};
 
-    $router.push({ path: "/user/login" });
-    loading.value = false;
-  } else {
-    ElNotification({
-      type: "error",
-      message: res.msg,
-    });
+const register = async () => {
+  try {
+    await registerForms.value.validate();
+    loading.value = true;
+
+    selectRandomAvatar();
+
+    console.log("注册信息:", registerForm);
+    const res = await reqRegister(registerForm);
+    if (res.code == 200 && res.data != null) {
+      ElMessage.success("注册成功，欢迎加入");
+      $router.push({ path: "/user/login" });
+    } else {
+      ElMessage.error(res.msg);
+    }
+  } catch (error) {
+    ElMessage.error("注册过程中出现错误，请稍后再试");
+  } finally {
     loading.value = false;
   }
 };
 
+// Validation rules
 const rules = {
-  userAccount: [{ trigger: "change", validator: validatorUserName }],
-  userName: [{ trigger: "change", validator: validatorUserName }],
-  userEmail: [{ trigger: "change", validator: validatorEmail }],
-  userPwd: [{ trigger: "change", validator: validatorPassword }],
-  confirmPassword: [{ trigger: "change", validator: validatorConfirmPassword }],
-  code: [{ required: true, message: "验证码不能为空", trigger: "change" }],
-  userAge: [{ required: true, message: "请输入真实年龄", trigger: "change" }],
+  userAccount: [{ trigger: "blur", validator: validatorUserName }],
+  userName: [{ trigger: "blur", validator: validatorUserName }],
+  userEmail: [{ trigger: "blur", validator: validatorEmail }],
+  userPwd: [{ trigger: "blur", validator: validatorPassword }],
+  confirmPassword: [{ trigger: "blur", validator: validatorConfirmPassword }],
+  code: [{ required: true, message: "验证码不能为空", trigger: "blur" }],
+  userAge: [{ required: true, message: "请输入真实年龄", trigger: "blur" }],
 };
 </script>
 
@@ -237,24 +274,27 @@ const rules = {
   width: 100%;
   height: 100vh;
   display: flex;
+
   justify-content: center;
   align-items: center;
   background: url("@/assets/images/background.jpg") no-repeat center center fixed;
   background-size: cover;
 }
-
+.el-input {
+  width: 260px;
+}
 .register_wrapper {
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   padding: 40px;
   background: url("@/assets/images/register_form.png") no-repeat center center;
   background-size: cover;
+  margin-left: 300px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-left: 300px;
 
   h1,
   h2 {
@@ -271,7 +311,27 @@ const rules = {
   }
 
   .register_btn {
-    width: 100%;
+    width: 260px;
+  }
+}
+
+.fixed-width {
+  width: 260px;
+}
+
+.input-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  > div {
+    flex: 1;
+    margin-right: 10px; // 可以根据需要调整间距
+  }
+
+  > div:last-child {
+    margin-right: 0;
   }
 }
 </style>

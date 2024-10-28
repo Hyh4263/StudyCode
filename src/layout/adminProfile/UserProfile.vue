@@ -9,11 +9,12 @@
               <el-card class="box-card">
                 <div class="profile-sidebar">
                   <div class="profile-userpic">
-                    <el-image
+                    <!-- <el-image
                       style="width: 150px; height: 150px"
                       :src="user.imgPath"
                       alt="相关图片"
-                    />
+                    /> -->
+                    <img :src="user.imgPath" alt="User Avatar" />
                   </div>
                   <div class="profile-usertitle">
                     <h3 class="mb-1">{{ user.userName }}</h3>
@@ -90,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import Header from "@/components/header/index.vue";
 import Footer from "@/components/footer/index.vue";
 import UserInfoForm from "@/components/UserInfoForm/UserInfoForm.vue";
@@ -101,6 +102,9 @@ import { useRouter } from "vue-router";
 //获取存储用户信息的仓库对象
 let userStore = useUserStore();
 let $router = useRouter();
+
+const relativePath = userStore.avatar; // 后端返回的相对路径
+const avatarUrl = ref("");
 
 // const user = ref({
 //   imgPath: "assets/images/profile.jpg", // 默认图片路径
@@ -137,8 +141,37 @@ const asyncComponents = {
   FeedbackManagement: () =>
     import("@/layout/adminProfile/FeedbackManagement.vue").then((m) => m.default),
   DiseaseStatistics: () =>
-    import("@/layout/adminProfile/DiseaseStatistics.vue").then((m) => m.default),
+    import("@/layout/adminProfile/EchartStatistics.vue").then((m) => m.default),
 };
+
+// const loadAvatar = async () => {
+//   try {
+//     // 使用 import.meta.glob 导入所有头像
+//     const avatars = import.meta.glob("@/assets/images/userImg/*.png");
+//     const avatarPath = Object.keys(avatars).find((path) => path.includes(relativePath));
+
+//     if (avatarPath) {
+//       // 使用 new URL 构建绝对路径
+//       const fullPath = new URL(avatarPath, import.meta.url).href;
+//       avatarUrl.value = fullPath;
+//     } else {
+//       // 使用 new URL 构建默认头像的绝对路径
+//       const defaultPath = new URL("@/assets/images/userImg/img_99png", import.meta.url)
+//         .href;
+//       avatarUrl.value = defaultPath;
+//     }
+//   } catch (error) {
+//     console.error("加载头像时发生错误:", error);
+//     // 设置默认头像路径
+//     const defaultPath = new URL("@/assets/images/userImg/img_99.png", import.meta.url)
+//       .href;
+//     avatarUrl.value = defaultPath;
+//   }
+// };
+
+// onMounted(() => {
+//   loadAvatar();
+// });
 
 // Default component to display
 const currentComponent = ref(UserInfoForm);

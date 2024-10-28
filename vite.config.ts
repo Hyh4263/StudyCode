@@ -28,11 +28,15 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': { // 注意这里使用 '/api' 作为键名
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8081',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''), // 移除 '/api' 前缀
       }
-    }
+    },
+    // fs: {
+    //   // 允许访问此目录，确保路径正确
+    //   allow: ['D:/JavaWeb/data/medicine/vue-project', './public'],
+    // },
   }
 
 })

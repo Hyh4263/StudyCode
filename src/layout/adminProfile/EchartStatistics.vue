@@ -57,7 +57,7 @@
 import { ref, onMounted } from "vue";
 import ECharts from "@/components/Echarts/ECharts.vue";
 import { reqGetUserList } from "@/api/user/index.ts";
-import { reqIllnessList, reqHasNewsList } from "@/api/news/index.ts";
+import { reqIllnessList, reqIllness } from "@/api/illness/index.ts";
 
 // Chart options refs
 const diseaseCategoryOptions = ref({});
@@ -74,7 +74,7 @@ onMounted(() => {
 
 // Fetch disease statistics
 const fetchDiseaseData = () => {
-  reqHasNewsList().then((response) => {
+  reqIllness().then((response) => {
     const data = response.data;
     console.log("疾病数据：", data);
 
@@ -272,16 +272,41 @@ const initAgeChart = (ageStats: any) => {
 };
 
 // Initialize registration chart
+// const initRegistrationChart = (monthlyRegistration: any) => {
+//   registrationOptions.value = {
+//     title: { text: "每月注册用户数量" },
+//     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+//     xAxis: {
+//       type: "category",
+//       data: monthlyRegistration.map((item: any) => item.month),
+//     },
+//     yAxis: { type: "value" },
+//     series: [{ data: monthlyRegistration.map((item: any) => item.count), type: "bar" }],
+//   };
+// };
+// Initialize registration chart as a line chart
 const initRegistrationChart = (monthlyRegistration: any) => {
   registrationOptions.value = {
     title: { text: "每月注册用户数量" },
-    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    tooltip: { trigger: "axis", axisPointer: { type: "line" } }, // Tooltip and axis pointer for a line chart
     xAxis: {
       type: "category",
       data: monthlyRegistration.map((item: any) => item.month),
     },
     yAxis: { type: "value" },
-    series: [{ data: monthlyRegistration.map((item: any) => item.count), type: "bar" }],
+    series: [
+      {
+        data: monthlyRegistration.map((item: any) => item.count),
+        type: "line", // Change to line chart
+        smooth: true, // Optional: adds a smooth curve to the line
+        lineStyle: {
+          color: "#5470C6", // Set line color
+        },
+        itemStyle: {
+          color: "#5470C6", // Set color of points on the line
+        },
+      },
+    ],
   };
 };
 </script>

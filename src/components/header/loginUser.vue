@@ -8,9 +8,7 @@
     </span>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item>
-          <router-link to="/user/index">个人资料</router-link>
-        </el-dropdown-item>
+        <el-dropdown-item @click="handleUserInfo"> 个人资料 </el-dropdown-item>
         <el-dropdown-item @click="handleLogout">
           <!-- <router-link to="/user/logout">退出登录</router-link> -->
           退出登录
@@ -40,6 +38,10 @@ const handleLogout = () => {
       location.reload();
     }
   });
+};
+const handleUserInfo = () => {
+  // 跳转到个人中心页面
+  $router.push({ path: "/user/index" });
 };
 </script>
 <script lang="ts">

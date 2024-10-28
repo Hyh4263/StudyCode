@@ -4,13 +4,13 @@
       <!-- 头部区域 -->
       <Header></Header>
       <!-- 内容区域 -->
-      <el-main>
+      <el-main class="content">
         <!-- 药品信息部分 -->
         <el-card class="medicine-card">
           <el-row :gutter="20">
             <el-col :span="8">
               <el-image
-                style="width: 100%; height: auto"
+                style="width: 100%; height: 280px"
                 :src="medicine.imgPath"
                 alt="药品图片"
               />
@@ -113,31 +113,43 @@ onMounted(() => {
 <style scoped>
 .common-layout {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  height: 100vh;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .container {
   flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 20px;
 }
 
-/* .main {
-  flex: 1;
+.content {
+  background-color: #f3f7fa;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px 20px;
-} */
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+  box-sizing: border-box;
+}
 
 .medicine-card {
   width: 100%;
-  padding: 20px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.medicine-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .drug-info {
@@ -146,40 +158,116 @@ onMounted(() => {
 
 .drug-name {
   font-size: 30px;
-  font-weight: bold;
+  font-weight: 700;
+  color: #333;
   margin-bottom: 10px;
+  text-transform: capitalize;
 }
 
 .drug-price {
   font-size: 24px;
   color: #67c23a;
-  margin-top: 30px;
-  margin-bottom: 10px;
+  margin-top: 10px;
+  font-weight: 600;
 }
 
 .drug-brand {
   font-size: 18px;
-  font-size: 20px;
-  font-weight: bold;
+  color: #555;
+  font-weight: 600;
+  margin-top: 8px;
 }
 
 .drug-indications h3,
 .drug-section h3 {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: left;
-  margin-top: 50px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #4a4a4a;
+  margin-top: 20px;
+  border-left: 4px solid #67c23a;
+  padding-left: 10px;
 }
 
-.drug-section {
-  margin-top: 20px;
+.drug-section,
+.drug-indications {
+  margin-top: 15px;
+  color: #666;
 }
 
 .drug-section p,
 .drug-indications p {
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
   text-align: left;
+  color: #444;
+}
+
+/* Animations for smooth content load */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.medicine-card,
+.drug-info,
+.drug-section {
+  animation: fadeIn 0.6s ease both;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .medicine-card {
+    padding: 20px;
+  }
+
+  .drug-name {
+    font-size: 26px;
+  }
+
+  .drug-price {
+    font-size: 20px;
+  }
+
+  .drug-brand,
+  .drug-indications h3,
+  .drug-section h3 {
+    font-size: 18px;
+  }
+
+  .drug-section p,
+  .drug-indications p {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .medicine-card {
+    padding: 15px;
+  }
+
+  .drug-name {
+    font-size: 24px;
+  }
+
+  .drug-price {
+    font-size: 18px;
+  }
+
+  .drug-brand,
+  .drug-indications h3,
+  .drug-section h3 {
+    font-size: 16px;
+  }
+
+  .drug-section p,
+  .drug-indications p {
+    font-size: 14px;
+  }
 }
 </style>
