@@ -3,11 +3,13 @@ package com.example.medicine.service;
 import com.example.medicine.dao.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+
 /**
  * 基础服务类
  *
  * @author XUEW
  */
+
 public abstract class BaseService<T> implements IService<T> {
 
     @Autowired
@@ -34,6 +36,7 @@ public abstract class BaseService<T> implements IService<T> {
     @Autowired
     protected PageviewDao pageviewDao;
 
-   protected VerCodeMapper verCodeMapper;
+    @Autowired
+    protected VerCodeMapper verCodeMapper;
 
 }

@@ -1,3 +1,6 @@
+server:
+  port: 8081
+
 spring:
   # 数据源配置
   datasource:
@@ -29,6 +32,10 @@ spring:
     valid: 5
     title: "药品甄选 - 用户认证"
     template: "您的动态验证码为：<strong style='color: red'>%s</strong>，%d分钟内有效，若非本人操作，请勿泄露。"
+#  静态图片存放路径
+  web:
+    resources:
+      static-locations: file:D:\data
 # 日志配置
 logging:
   level:
@@ -45,8 +52,16 @@ pagehelper:
   support-methods-arguments: true
 # 阿里云通义千问配置
 #ai-key: sk-xxxxxxxxxxxxx
-
 ai-key: sk-9e89f89c710d420293271b9bf802cd47
+
+#项目配置
+kkBlog:
+  protocol: http # 协议
+  ip-address: localhost #系统运行的ip地址
+  cookie-expire: 31536000 # cookie过期时间
+  image-path: D:\data\images\ #图片保存路径
+  vue-image-path: D:\JavaWed\data\medicine\vue-project\src\assets\images\userImg\ #vue项目头像保存路径
+
 
 
 

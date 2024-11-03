@@ -123,7 +123,98 @@ public class IllnessService extends BaseService<Illness> {
 //        return map;
 //    }
 
+    /**
+     * 疾病关键词搜索
+     * @param keyword
+     * @return
+     */
 
+//    public Map<String, Object> searchIllness(String keyword) {
+//
+//        Map<String, Object> map = new HashMap<>();
+//        QueryWrapper<Illness> illnessQueryWrapper = new QueryWrapper<>();
+//
+//        // 构建查询条件
+//        if (Assert.notEmpty(keyword)) {
+//            keyword = keyword.trim(); // 去除关键词前后空格
+//            illnessQueryWrapper
+//                    .like("illness_name", keyword)
+//                    .or()
+//                    .like("include_reason", keyword)
+//                    .or()
+//                    .like("illness_symptom", keyword)
+//                    .or()
+//                    .like("special_symptom", keyword);
+//        }
+//
+//        illnessQueryWrapper.orderByDesc("create_time");
+//
+//        // 查询结果，不使用分页
+//        List<Map<String, Object>> list = illnessDao.selectMaps(illnessQueryWrapper);
+//
+//        // 处理每个记录，填充页面信息和疾病类别
+//        list.forEach(l -> {
+//            Integer id = MapUtil.getInt(l, "id");
+//            Pageview pageInfo = pageviewDao.selectOne(new QueryWrapper<Pageview>().eq("illness_id", id));
+//            l.put("kindName", "暂无归属类");
+//            l.put("create_time", MapUtil.getDate(l, "create_time"));
+//            l.put("pageview", pageInfo == null ? 0 : pageInfo.getPageviews());
+//
+//            Integer kindId = MapUtil.getInt(l, "kind_id");
+//            if (Assert.notEmpty(kindId)) {
+//                IllnessKind illnessKind = illnessKindDao.selectById(kindId);
+//                if (Assert.notEmpty(illnessKind)) {
+//                    l.put("kindName", illnessKind.getName());
+//                }
+//            }
+//        });
+//
+//        map.put("illness", list);
+//        return map;
+//    }
+
+    public List<Search> searchIllness(String keyword) {
+        List<Search> results = new ArrayList<>();
+        QueryWrapper<Illness> illnessQueryWrapper = new QueryWrapper<>();
+
+        // Construct the query
+        if (Assert.notEmpty(keyword)) {
+            keyword = keyword.trim();
+            illnessQueryWrapper
+                    .like("illness_name", keyword)
+                    .or()
+                    .like("include_reason", keyword)
+                    .or()
+                    .like("illness_symptom", keyword)
+                    .or()
+                    .like("special_symptom", keyword);
+        }
+        illnessQueryWrapper.orderByDesc("create_time");
+
+        // Fetch illness records and populate Search objects
+        List<Illness> illnessList = illnessDao.selectList(illnessQueryWrapper);
+        for (Illness illness : illnessList) {
+            Search searchResult = new Search();
+            searchResult.setIllnessId(illness.getId());
+            searchResult.setIllnessName(illness.getIllnessName());
+            searchResult.setIncludeReason(illness.getIncludeReason());
+            searchResult.setIllnessSymptom(illness.getIllnessSymptom());
+            searchResult.setSpecialSymptom(illness.getSpecialSymptom());
+            searchResult.setCreateTime(illness.getCreateTime());
+            searchResult.setUpdateTime(illness.getUpdateTime());
+            results.add(searchResult);
+        }
+        return results;
+    }
+
+    /**
+     * 疾病分页查询
+     * @param kind
+     * @param illnessName
+     * @param page
+     * @param pageSize
+     * @return
+     */
     public Map<String, Object> findIllness(Integer kind, String illnessName, Integer page, Integer pageSize) {
 
         Map<String, Object> map = new HashMap<>(4);

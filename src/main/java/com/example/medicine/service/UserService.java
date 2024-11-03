@@ -104,4 +104,32 @@ public class UserService extends BaseService<User> {
     public Map<String, Object> findList(Integer page, Integer pageSize) {
         return null;
     }
+
+    public void updateUserAvatarById(User user) {
+//        UPDATE `user` set avatar=#{avatar} WHERE id=#{id}
+
+        userDao.updateById(user);
+    }
+
+    public void updateUserAvatar(Integer userId, String imgPath) {
+
+        // 检查用户是否存在
+        User user = userDao.selectById(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        // 使用 MyBatis-Plus 的 updateById 方法更新用户头像路径
+        User updateUser = new User();
+        updateUser.setImgPath(imgPath);
+        updateUser.setId(userId);
+        int result = userDao.updateById(updateUser);
+        if (result != 1) {
+            throw new RuntimeException("Failed to update user avatar");
+        }
+
+
+
+
+    }
 }

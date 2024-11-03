@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 基础服务接口
  *
- * @author XUEW
+ * @author Hyh
  */
 public interface IService<T> {
 

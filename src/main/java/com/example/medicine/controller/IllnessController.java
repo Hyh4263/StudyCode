@@ -56,7 +56,7 @@ public class IllnessController extends BaseController<Illness> {
      * 分页查询相关疾病
      */
     @GetMapping("findIllness")
-    public Result findIllness(Map<String, Object> map, Integer kind, String illnessName, @RequestParam(defaultValue = "1") Integer pageNow, @RequestParam(defaultValue = "5") Integer pageSize) {
+    public Result findIllness(Map<String, Object> map, Integer kind, String illnessName, @RequestParam(defaultValue = "1") Integer pageNow, @RequestParam(defaultValue = "10") Integer pageSize) {
 
         // 调用service层的分页查询方法
         Map<String, Object> illness = illnessService.findIllness(kind, illnessName, pageNow, pageSize);

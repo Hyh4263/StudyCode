@@ -4,10 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.medicine.dao.MedicineDao;
-import com.example.medicine.entity.Illness;
-import com.example.medicine.entity.IllnessKind;
-import com.example.medicine.entity.Medicine;
-import com.example.medicine.entity.Pageview;
+import com.example.medicine.entity.*;
 import com.example.medicine.utils.*;
 import com.example.medicine.utils.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +88,85 @@ public class MedicineService extends BaseService<Medicine> {
         return map;
     }
 
+//    public Map<String, Object> searchMedicine(String keyword) {
+//
+//        Map<String, Object> map = new HashMap<>();
+//        QueryWrapper<Medicine> medinceQueryWrapper = new QueryWrapper<>();
+//
+//
+//        // 构建查询条件
+//        if (Assert.notEmpty(keyword)) {
+//            keyword = keyword.trim(); // 去除关键词前后空格
+//            medinceQueryWrapper
+//                    .like("medicine_name", keyword)
+//                    .or()
+//                    .like("keyword", keyword)
+//                    .or()
+//                    .like("medicine_effect", keyword)
+//                    .or()
+//                    .like("medicine_brand", keyword)
+//                    .or()
+//                    .like("interaction", keyword)
+//                    .or()
+//                    .like("taboo", keyword)
+//                    .or()
+//                    .like("us_age", keyword)
+//                    .or()
+//                    .like("medicine_price", keyword)
+//            ;
+//
+//
+//        }
+//
+//        medinceQueryWrapper.orderByDesc("create_time");
+//
+//        // 查询结果，不使用分页
+//        List<Map<String, Object>> list = medicineDao.selectMaps(medinceQueryWrapper);
+//        map.put("medicine", list);
+//        return map;
+//    }
 
+    public List<Search> searchMedicine(String keyword) {
+        List<Search> results = new ArrayList<>();
+        QueryWrapper<Medicine> medicineQueryWrapper = new QueryWrapper<>();
+
+        // Construct the query
+        if (Assert.notEmpty(keyword)) {
+            keyword = keyword.trim();
+            medicineQueryWrapper
+                    .like("medicine_name", keyword)
+                    .or()
+                    .like("medicine_effect", keyword)
+                    .or()
+                    .like("medicine_brand", keyword)
+                    .or()
+                    .like("interaction", keyword)
+                    .or()
+                    .like("taboo", keyword)
+                    .or()
+                    .like("us_age", keyword);
+        }
+        medicineQueryWrapper.orderByDesc("create_time");
+
+        // Fetch medicine records and populate Search objects
+        List<Medicine> medicineList = medicineDao.selectList(medicineQueryWrapper);
+        for (Medicine medicine : medicineList) {
+            Search searchResult = new Search();
+            searchResult.setMedicineId(medicine.getId());
+            searchResult.setMedicineName(medicine.getMedicineName());
+            searchResult.setMedicineEffect(medicine.getMedicineEffect());
+            searchResult.setMedicineBrand(medicine.getMedicineBrand());
+            searchResult.setInteraction(medicine.getInteraction());
+            searchResult.setTaboo(medicine.getTaboo());
+            searchResult.setUsAge(medicine.getUsAge());
+            searchResult.setMedicinePrice(medicine.getMedicinePrice());
+            searchResult.setImgPath(medicine.getImgPath());
+            searchResult.setCreateTime(medicine.getCreateTime());
+            searchResult.setUpdateTime(medicine.getUpdateTime());
+            results.add(searchResult);
+        }
+        return results;
+    }
     public Map<String, Object> findMedicineList(Integer page, Integer pageSize) {
         // 使用 MyBatis Plus 的 Page<> 对象进行分页查询
         Page<Map<String, Object>> pageResult = new Page<>(page, pageSize);

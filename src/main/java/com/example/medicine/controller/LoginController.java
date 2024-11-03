@@ -3,11 +3,9 @@ package com.example.medicine.controller;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.medicine.dao.VerCodeMapper;
-import com.example.medicine.dto.RespResult;
 import com.example.medicine.dto.Result;
 import com.example.medicine.entity.User;
 import com.example.medicine.entity.VerCode;
-import com.example.medicine.service.VerCodeService;
 import com.example.medicine.utils.Assert;
 import com.example.medicine.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +53,9 @@ public class LoginController extends BaseController<User> {
         }
 
         user.setRoleStatus(0);
-        user.setImgPath("https://moti-cloud-v2.oss-cn-beijing.aliyuncs.com/Snipaste_2022-05-01_15-37-01.png");
+//        http://localhost:8081/images/userImg/img_6.png
+        user.setImgPath("http://localhost:8081" + user.getImgPath());
+
         user = userService.save(user);
 
         session.setAttribute("loginUser", user);

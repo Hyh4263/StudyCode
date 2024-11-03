@@ -14,4 +14,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("history")
 public class HistoryController extends BaseController<History> {
 
+
 }
