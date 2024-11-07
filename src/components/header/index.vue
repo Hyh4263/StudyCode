@@ -67,7 +67,7 @@ const menuItems = ref([
   { index: "/health", label: "Health" },
   { index: "/medicine", label: "Medicine" },
   { index: "/illness", label: "Illness" },
-  { index: "/client", label: "Client" },
+  { index: "/feedback", label: "Feedback" },
 ]);
 
 // Check if the user is logged in

@@ -289,7 +289,7 @@ const rules = {
   padding: 40px;
   background: url("@/assets/images/register_form.png") no-repeat center center;
   background-size: cover;
-  margin-left: 300px;
+  margin-left: 300px; //向右移动
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   border-radius: 10px;
   display: flex;

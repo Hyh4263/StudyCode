@@ -1,6 +1,6 @@
 // 真实接口
 //统一管理咱们项目用户相关的接口
-import request from '@/utils/request'
+import request from "@/utils/request";
 // import { loginFormData, loginResponseData, userInfoResponseData } from './type';
 // 项目用户相关的请求地址
 enum API {
@@ -24,10 +24,7 @@ enum API {
     GET_ROLE_LIST_BY_ID = "/role/getRoleById",
 
     changeAvatar = "/api/user/changeAvatar",
-
-
-
-
+    uploadAvatar = "/api/user/upload",
 
 }
 // 登录接口
@@ -39,13 +36,20 @@ export const reqLogout = () => request.post<any, any>(API.LOGOUT_URL);
 // 注册接口
 export const reqRegister = (data: any) => request.post<any, any>(API.REGISTER_URL, data);
 // export const reqRegister = (data: any) => request.post<any, any>(API.REGISTER_URL, data);
-// 发送邮箱验证码/ 
-export const reqSendEmailCode = (email: string) => request.get<any, any>(API.EMAILCODE_URL, { params: { email } });
+// 发送邮箱验证码/
+export const reqSendEmailCode = (email: string) =>
+    request.get<any, any>(API.EMAILCODE_URL, { params: { email } });
 // 更新用户信息
-export const reqUpdatedUserInfo = (data: any) => request.post<any, any>(API.UPDATED_URL, data);
+export const reqUpdatedUserInfo = (data: any) =>
+    request.post<any, any>(API.UPDATED_URL, data);
 // 更新密码
-export const reqUpdatedPwd = (data: any) => request.post<any, any>(API.UPDATEDPWD_URL, data);
+export const reqUpdatedPwd = (data: any) =>
+    request.post<any, any>(API.UPDATEDPWD_URL, data);
 // 获取用户列表
 export const reqGetUserList = () => request.get<any, any>(API.GET_USER_LIST);
 // 更换用户头像
-export const reqChangeAvatar = (data: any) => request.post<any, any>(API.changeAvatar, data);
+export const reqChangeAvatar = (data: any) =>
+    request.post<any, any>(API.changeAvatar, data);
+export const reqUploadAvatar = (data: any) =>
+    request.post<any, any>(API.uploadAvatar, data);
+

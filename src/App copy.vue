@@ -21,9 +21,9 @@ export default {
     clearLocalStorage(event) {
       localStorage.clear();
       // 可以选择阻止默认行为，显示确认对话框
-      event.preventDefault();
+      // event.preventDefault();
       // 或者设置返回值
-      event.returnValue = "";
+      // event.returnValue = '';
     },
   },
 };

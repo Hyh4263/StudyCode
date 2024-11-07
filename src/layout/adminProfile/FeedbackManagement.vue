@@ -1,80 +1,146 @@
 <template>
-  <el-card style="height: 100%">
-    <div class="disease-management">
+  <el-empty v-if="loading" description="正在加载..." class="empty-state" />
+
+  <el-card class="feedback-management-card" v-else>
+    <div class="feedback-management">
       <el-container>
         <el-header>
-          <h2>反馈信息</h2>
-          <span> 齐人之智，共创新兴。共收集 {{ total }} 条反馈信息 </span>
+          <h2>反馈信息管理</h2>
+          <span> 共收集 {{ total }} 条反馈信息 </span>
         </el-header>
 
         <el-main>
-          <el-table :data="feebacks" style="width: 100%">
+          <el-table :data="feedbacks" stripe style="width: 100%">
             <el-table-column prop="id" label="ID" width="50"></el-table-column>
-            <el-table-column prop="email" label="邮箱" width="200"></el-table-column>
             <el-table-column prop="name" label="用户名" width="100"></el-table-column>
-            <el-table-column prop="title" label="标题" width="100"></el-table-column>
-            <el-table-column prop="content" label="内容" width="250"></el-table-column>
+            <el-table-column
+              prop="contactMethod"
+              label="联系方式"
+              width="100"
+              :formatter="formatContactMethod"
+            ></el-table-column>
+            <el-table-column
+              prop="contact"
+              label="联系信息"
+              width="150"
+            ></el-table-column>
+            <el-table-column prop="title" label="标题" width="150"></el-table-column>
+            <el-table-column
+              prop="content"
+              label="内容"
+              width="250"
+              :show-overflow-tooltip="true"
+            ></el-table-column>
             <el-table-column
               prop="createTime"
               label="反馈时间"
-              width="150"
+              width="180"
             ></el-table-column>
-
-            <el-table-column label="操作" width="150">
+            <el-table-column
+              prop="status"
+              label="状态"
+              width="100"
+              :formatter="formatStatus"
+            >
+              <template #default="{ row }">
+                <el-tag :type="row.status === 1 ? 'warning' : 'success'" effect="dark">
+                  {{ formatStatus(row) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="type" label="类型" width="100" :formatter="formatType">
+              <template #default="{ row }">
+                <el-tag :type="row.type === 1 ? 'info' : 'danger'" effect="dark">
+                  {{ formatType(row) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="120" align="center">
               <template #default="scope">
-                <el-link @click="handleView(scope.row)" type="primary">
-                  <el-icon><View /></el-icon>
-                </el-link>
-                <el-link @click="handleEdit(scope.row)" type="primary">
-                  <el-icon><Edit /></el-icon>
-                </el-link>
-                <el-link @click="handleDelete(scope.row)" type="primary">
-                  <el-icon><Delete /></el-icon>
-                </el-link>
+                <el-tooltip content="查看" placement="top">
+                  <el-link
+                    @click="handleView(scope.row)"
+                    type="primary"
+                    icon="View"
+                  ></el-link>
+                </el-tooltip>
+                <el-tooltip content="编辑" placement="top">
+                  <el-link
+                    @click="handleEdit(scope.row)"
+                    type="primary"
+                    icon="Edit"
+                  ></el-link>
+                </el-tooltip>
+                <el-tooltip content="删除" placement="top">
+                  <el-link
+                    @click="handleDelete(scope.row)"
+                    type="danger"
+                    icon="Delete"
+                  ></el-link>
+                </el-tooltip>
               </template>
             </el-table-column>
           </el-table>
 
           <el-pagination
-            @current-change="getFeedBackList"
+            @current-change="getFeedbackList"
             @size-change="sizeChange"
             v-model:current-page="currentPage"
             v-model:page-size="pageSize"
-            :page-sizes="[3, 5, 7, 9]"
+            :page-sizes="[5, 10, 15, 20]"
             :background="true"
-            layout="prev, pager, next, jumper, ->, sizes, total"
+            layout="total, sizes, prev, pager, next, jumper"
             :total="total"
           />
         </el-main>
 
-        <!-- Dialog for Viewing/Editing/Adding Diseases -->
-        <el-dialog v-model="isDialogVisible" :title="dialogTitle">
+        <!-- Dialog for Viewing/Editing Feedback -->
+        <el-dialog v-model="isDialogVisible" :title="dialogTitle" width="500px">
           <el-form
-            :model="currentFeeback"
-            ref="feedBackForm"
+            :model="currentFeedback"
+            ref="feedbackForm"
             :rules="rules"
-            label-width="120px"
+            label-width="90px"
           >
-            <el-form-item label="ID" prop="id">
-              <el-input v-model="currentFeeback.id" :disabled="isReadOnly" />
+            <el-form-item label="用户名" prop="name">
+              <el-input v-model="currentFeedback.name" :disabled="isReadOnly" />
             </el-form-item>
-            <el-form-item label="邮箱" prop="email">
-              <el-input v-model="currentFeeback.email" :disabled="isReadOnly" />
+            <el-form-item label="联系方式" prop="contactMethod">
+              <el-input :value="contactMethodFormatted" :disabled="true" />
+            </el-form-item>
+            <el-form-item label="联系信息" prop="contact">
+              <el-input v-model="currentFeedback.contact" :disabled="isReadOnly" />
             </el-form-item>
             <el-form-item label="标题" prop="title">
-              <el-input v-model="currentFeeback.title" :disabled="isReadOnly" />
+              <el-input v-model="currentFeedback.title" :disabled="isReadOnly" />
             </el-form-item>
             <el-form-item label="内容" prop="content">
-              <el-input v-model="currentFeeback.content" :disabled="isReadOnly" />
+              <el-input
+                type="textarea"
+                v-model="currentFeedback.content"
+                :disabled="isReadOnly"
+                rows="3"
+              />
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="currentFeedback.status" :disabled="isReadOnly">
+                <el-option label="未处理" value="1"></el-option>
+                <el-option label="已处理" value="2"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="类型" prop="type">
+              <el-input :value="typeFormatted" :disabled="true" />
             </el-form-item>
             <el-form-item label="反馈时间" prop="createTime">
-              <el-input v-model="currentFeeback.createTime" disabled />
+              <el-input v-model="currentFeedback.createTime" disabled />
             </el-form-item>
           </el-form>
-          <div v-if="!isReadOnly" slot="footer">
+          <template #footer>
             <el-button @click="closeDialog">取消</el-button>
-            <el-button type="primary" @click="submitForm">提交</el-button>
-          </div>
+            <el-button type="primary" @click="submitForm" v-if="!isReadOnly"
+              >提交</el-button
+            >
+          </template>
         </el-dialog>
       </el-container>
     </div>
@@ -91,215 +157,156 @@ import {
   reqDeletefeedBackById,
 } from "@/api/feedback/index";
 import { ElNotification } from "element-plus";
-import type { effect } from "vue";
 
 const rules = {
-  titel: [{ required: true, message: "请输入标题", trigger: "blur" }],
+  title: [{ required: true, message: "请输入标题", trigger: "blur" }],
   content: [{ required: true, message: "请输入内容", trigger: "blur" }],
 };
 
 const isDialogVisible = ref(false);
 const dialogTitle = ref("");
 const isReadOnly = ref(false);
-const feedBackForm = ref<any>(null);
-
-// Pagination state
+const feedbackForm = ref(null);
+const loading = ref(true);
 const currentPage = ref(1);
 const pageSize = ref(5);
 const total = ref(0);
-const feebacks = ref([
-  {
-    id: "",
-    name: "",
-    email: "",
-    title: "",
-    content: "",
-    createTime: "",
-  },
-]);
-
-const currentFeeback = reactive({
+const feedbacks = ref([]);
+const currentFeedback = reactive({
   id: "",
+  userId: "",
   name: "",
-  email: "",
+  contactMethod: "",
+  contact: "",
   title: "",
   content: "",
   createTime: "",
+  status: "",
+  type: "",
 });
 
 onMounted(() => {
-  getFeedBackList();
+  getFeedbackList();
 });
 
-// 获取疾病列表
-const getFeedBackList = async (pager = 1) => {
-  currentPage.value = pager;
-  const result: any = await reqfeedBackList(currentPage.value, pageSize.value);
-  console.log("result", result);
-  if (result.code === 200) {
-    total.value = result.data.totalElements;
-    // feebacks.value = result.data.medicineList;
-    feebacks.value = result.data.feedBacksList.map((item: any) => {
-      return {
-        id: item.id,
-        name: item.name,
-        email: item.email,
-        title: item.title,
-        content: truncatedText(item.content),
-        createTime: formatTime(item.createTime),
-      };
-    });
-    console.log("数据", feebacks.value);
-  }
+// 计算属性用于格式化字段
+const contactMethodFormatted = computed(() => {
+  return currentFeedback.contactMethod === 1 ? "Email" : "Phone";
+});
+
+const typeFormatted = computed(() => {
+  return currentFeedback.type === 1 ? "建议" : "问题";
+});
+
+const formatContactMethod = (row: any) => {
+  return row.contactMethod === 1 ? "Email" : "Phone";
 };
 
-// 获取单个反馈信息
-const getFeedBackById = async (Id: number) => {
-  const result: any = await reqHasfeedBackByOne(Id);
-  if (result.code === 200) {
-    currentFeeback.id = result.data.FeedBack.id;
-    currentFeeback.name = result.data.FeedBack.name;
-    currentFeeback.email = result.data.FeedBack.email;
-    currentFeeback.title = result.data.FeedBack.title;
-    currentFeeback.content = result.data.FeedBack.content;
-    currentFeeback.createTime = formatTime(result.data.FeedBack.createTime);
-  }
+const formatStatus = (row: any) => {
+  return row.status === 1 ? "未处理" : "已处理";
 };
 
-// 截取文本
-const truncatedText = (text: string) =>
-  text.length > 15 ? text.slice(0, 15) + "..." : text;
-
-// 时间格式化
-const formatTime = (timeString: string): string => {
-  const date = new Date(timeString);
-  return `${date.getFullYear()}-${(date.getMonth() + 1)
-    .toString()
-    .padStart(2, "0")}-${date
-    .getDate()
-    .toString()
-    .padStart(2, "0")} ${date
-    .getHours()
-    .toString()
-    .padStart(2, "0")}:${date
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}:${date.getSeconds().toString().padStart(2, "0")}`;
-};
-
-// 分页器
-const sizeChange = (newSize: number) => {
-  pageSize.value = newSize;
-  currentPage.value = 1;
-  getFeedBackList();
+const formatType = (row: any) => {
+  return row.type === 1 ? "建议" : "问题";
 };
 
 const handleView = (row: any) => {
-  getFeedBackById(row.id);
+  getFeedbackById(row.id);
   dialogTitle.value = "查看反馈";
-  isReadOnly.value = true; // Set form to read-only
+  isReadOnly.value = true;
   isDialogVisible.value = true;
 };
 
 const handleEdit = (row: any) => {
-  resetForm();
-  getFeedBackById(row.id);
+  getFeedbackById(row.id);
   dialogTitle.value = "编辑反馈";
-  isReadOnly.value = false; // Allow form editing
+  isReadOnly.value = false;
   isDialogVisible.value = true;
 };
 
+const getFeedbackList = async (page = 1) => {
+  currentPage.value = page;
+  const result: any = await reqfeedBackList(currentPage.value, pageSize.value);
+  if (result.code === 200) {
+    total.value = result.data.totalElements;
+    feedbacks.value = result.data.feedBacksList;
+    loading.value = false;
+  }
+};
+// 分页器
+const sizeChange = (newSize: number) => {
+  pageSize.value = newSize;
+  currentPage.value = 1;
+  getFeedbackList();
+};
 const handleDelete = async (row: any) => {
-  try {
-    const result: any = await reqDeletefeedBackById(row.id);
-    if (result.code === 200) {
-      getFeedBackList();
-    }
-  } catch (error) {
-    ElNotification({
-      type: "error",
-      message: (error as Error).message,
-    });
+  const result: any = await reqDeletefeedBackById(row.id);
+  if (result.code === 200) {
+    getFeedbackList();
+    ElNotification({ type: "success", message: "删除成功" });
+  }
+};
+
+const getFeedbackById = async (id: any) => {
+  const result: any = await reqHasfeedBackByOne(id);
+  if (result.code === 200) {
+    Object.assign(currentFeedback, result.data.FeedBack);
   }
 };
 
 const submitForm = async () => {
-  try {
-    const valid = await feedBackForm.value.validate;
-    if (valid) {
-      const updatedFeedBack = ref<any>({
-        id: currentFeeback.id || null,
-        name: currentFeeback.name || null,
-        email: currentFeeback.email || null,
-        title: currentFeeback.title || null,
-        content: currentFeeback.content || null,
-        createTime: currentFeeback.createTime || null,
-      });
-      console.log("updatedMedicine", updatedFeedBack.value);
-      const result: any = await reqAddOrUpdatefeedBack(updatedFeedBack.value);
-      if (result.code === 200) {
-        closeDialog();
-        getFeedBackList();
-        ElNotification({
-          type: "success",
-          message: "操作成功",
-        });
-      } else {
-        ElNotification({
-          type: "error",
-          message: "操作失败",
-        });
-      }
-    } else {
-      ElNotification({
-        type: "error",
-        message: "验证失败",
-      });
-    }
-  } catch (error) {
-    ElNotification({
-      type: "error",
-      message: "失败",
-    });
+  const result = await reqAddOrUpdatefeedBack(currentFeedback);
+  if (result.code === 200) {
+    closeDialog();
+    getFeedbackList();
+    ElNotification({ type: "success", message: "操作成功" });
   }
 };
 
 const closeDialog = () => {
-  resetForm(); // Reset form and validation before closing
   isDialogVisible.value = false;
+  resetForm();
 };
 
 const resetForm = () => {
-  Object.assign(currentFeeback, {
+  Object.assign(currentFeedback, {
     id: "",
     name: "",
-    email: "",
+    contactMethod: "",
+    contact: "",
     title: "",
     content: "",
     createTime: "",
+    status: "",
+    type: "",
   });
-
-  if (feedBackForm.value) {
-    feedBackForm.value.resetFields(); // Reset form fields and validation
-  }
 };
 </script>
 
 <style scoped>
-.disease-management {
+.feedback-management {
   padding: 20px;
 }
 
+.feedback-management-card {
+  padding: 0;
+  border-radius: 12px;
+  height: 790.22px;
+}
+
 .el-header {
-  padding: 0 20px;
+  padding: 10px 20px;
   background-color: #f5f7fa;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #ebeef5;
 }
 
 .el-header h2 {
   margin: 0;
+  font-size: 18px;
+  color: #303133;
 }
 
 .el-header span {
@@ -308,5 +315,26 @@ const resetForm = () => {
 
 .el-main {
   padding: 20px;
+}
+
+.el-table th,
+.el-table td {
+  text-align: center;
+  font-size: 14px;
+}
+
+.el-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 15px;
+}
+
+.el-dialog__header {
+  font-size: 18px;
+  color: #303133;
+}
+
+.el-dialog {
+  border-radius: 12px;
 }
 </style>

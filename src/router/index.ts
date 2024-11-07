@@ -72,6 +72,11 @@ const router = createRouter({
       name: "Echarts",
       component: () => import("@/layout/adminProfile/EchartStatistics.vue"),
     },
+    {
+      path: "/feedback",
+      name: "FeedBack",
+      component: () => import("@/views/feedback/index.vue"),
+    },
 
     {
       path: "/search",

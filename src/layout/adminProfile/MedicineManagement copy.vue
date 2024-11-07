@@ -1,7 +1,5 @@
 <template>
-  <el-empty v-if="loading" description="正在加载..." class="empty-state" />
-
-  <el-card style="height: 100%" v-else>
+  <el-card style="height: 100%">
     <div class="disease-management">
       <el-container>
         <el-header>
@@ -167,13 +165,8 @@ const rules = {
   band: [{ required: true, message: "请输入品牌", trigger: "blur" }],
   type: [{ required: true, message: "请输入分类", trigger: "blur" }],
   price: [{ required: true, message: "请输入价格", trigger: "blur" }],
-  interaction: [{ required: true, message: "请输入药品的相互作用", trigger: "blur" }],
-  effect: [{ required: true, message: "请输入功效", trigger: "blur" }],
-  taboo: [{ required: true, message: "请输入禁忌", trigger: "blur" }],
-  use: [{ required: true, message: "请输入使用方法", trigger: "blur" }],
 };
 
-const loading = ref(true);
 const isDialogVisible = ref(false);
 const dialogTitle = ref("");
 const isReadOnly = ref(false);
@@ -317,6 +310,19 @@ const submitForm = async () => {
   }
 };
 
+const handleRemove = (file: UploadFile) => {
+  console.log(file);
+};
+
+const handlePictureCardPreview = (file: UploadFile) => {
+  dialogImageUrl.value = file.url!;
+  dialogVisible.value = true;
+};
+
+const handleDownload = (file: UploadFile) => {
+  console.log(file);
+};
+
 // 获取药品列表
 const getMedicineList = async (pager = 1) => {
   currentPage.value = pager;
@@ -339,7 +345,7 @@ const getMedicineList = async (pager = 1) => {
         updatedTime: formatTime(item.update_time),
       };
     });
-    loading.value = false;
+    console.log("数据", medicines.value);
   }
 };
 
@@ -405,16 +411,10 @@ const handleEdit = (row: any) => {
 };
 
 const handleDelete = async (row: any) => {
-  console.log("删除药品:", row);
   try {
-    console.log("删除药品ID:", row.img);
-    const deleteImgRes = await reqDeleteImg(row.img);
-    console.log("删除图片结果:", deleteImgRes);
-    if (deleteImgRes.code === 200) {
-      const deleteMedicineRes: any = await reqDeleteMedicineById(row.id);
-      if (deleteMedicineRes.code === 200 && deleteImgRes.code === 200) {
-        getMedicineList();
-      }
+    const result: any = await reqDeleteMedicineById(row.id);
+    if (result.code === 200) {
+      getMedicineList();
     }
   } catch (error) {
     ElNotification({

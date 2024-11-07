@@ -3,7 +3,7 @@
     <el-card>
       <el-row>
         <el-col :span="24">
-          <h1 class="page-title">数据统计</h1>
+          <h1 class="page-title">疾病与用户数据统计</h1>
         </el-col>
       </el-row>
 
@@ -18,8 +18,8 @@
 
         <el-col :span="12">
           <div class="chart-container">
-            <h2>药品种类数量统计</h2>
-            <ECharts :options="medicineTypeOptions" />
+            <h2>疾病浏览次数统计</h2>
+            <ECharts :options="diseaseVisitOptions" />
           </div>
         </el-col>
       </el-row>
@@ -55,23 +55,21 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import ECharts from "@/components/Echarts/ECharts.vue";
+// import ECharts from "@/components/Echarts/ECharts";
 import { reqGetUserList } from "@/api/user/index";
 import { reqIllnessList, reqIllness } from "@/api/illness/index";
-import { reqMedicineList, reqHasAllMedicines } from "@/api/medicine/index";
+
 // Chart options refs
 const diseaseCategoryOptions = ref({});
 const diseaseVisitOptions = ref({});
 const genderOptions = ref({});
 const ageOptions = ref({});
 const registrationOptions = ref({});
-const medicineTypeOptions = ref({});
 
 // Fetch data on component mount
 onMounted(() => {
   fetchDiseaseData(); // Fetch disease statistics
   fetchUserStatistics(); // Fetch user statistics
-  fetchMedicineData();
 });
 
 // Fetch disease statistics
@@ -142,7 +140,7 @@ const fetchDiseaseData = () => {
       xAxis: {
         type: "category",
         data: scatterData.map((item) => item.name),
-        axisLabel: { rotate: 0, interval: 0 }, // Rotate for better readability
+        axisLabel: { rotate: 45, interval: 0 }, // Rotate for better readability
       },
       yAxis: { type: "value", name: "浏览次数" },
       series: [
@@ -150,7 +148,7 @@ const fetchDiseaseData = () => {
           name: "浏览次数",
           type: "scatter",
           data: scatterData.map((item) => item.value),
-          symbolSize: (value: number) => value * 1, // Scale the size of the points
+          symbolSize: (value: number) => value * 3, // Scale the size of the points
           itemStyle: {
             color: "#5470C6",
           },
@@ -273,6 +271,19 @@ const initAgeChart = (ageStats: any) => {
   };
 };
 
+// Initialize registration chart
+// const initRegistrationChart = (monthlyRegistration: any) => {
+//   registrationOptions.value = {
+//     title: { text: "每月注册用户数量" },
+//     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+//     xAxis: {
+//       type: "category",
+//       data: monthlyRegistration.map((item: any) => item.month),
+//     },
+//     yAxis: { type: "value" },
+//     series: [{ data: monthlyRegistration.map((item: any) => item.count), type: "bar" }],
+//   };
+// };
 // Initialize registration chart as a line chart
 const initRegistrationChart = (monthlyRegistration: any) => {
   registrationOptions.value = {
@@ -298,52 +309,6 @@ const initRegistrationChart = (monthlyRegistration: any) => {
     ],
   };
 };
-
-// fetchMedicineData();
-const fetchMedicineData = () => {
-  reqHasAllMedicines().then((response) => {
-    console.log("返回的数据：", response);
-    const data = response.data;
-    const medicineTypeCount = processMedicineTypeData(data);
-    initMedicineTypeChart(medicineTypeCount);
-  });
-};
-
-// Process and initialize medicine type data
-const processMedicineTypeData = (medicineList: any[]) => {
-  const typeCount = medicineList.reduce((acc: any, medicine: any) => {
-    const typeName = getMedicineTypeName(medicine.medicineType);
-    acc[typeName] = (acc[typeName] || 0) + 1;
-    return acc;
-  }, {});
-
-  console.log("药品类型统计数据：", typeCount); // 确认数据中包含 "中成药"
-  return typeCount;
-};
-
-const getMedicineTypeName = (type: number) => {
-  switch (type) {
-    case 0:
-      return "西药";
-    case 1:
-      return "中药";
-    case 2:
-      return "中成药";
-    default:
-      return "其他";
-  }
-};
-
-const initMedicineTypeChart = (data: any) => {
-  console.log("初始化药品种类数据：", data); // 检查是否包含 "中成药"
-  medicineTypeOptions.value = {
-    title: { text: "药品种类数量统计", left: "center" },
-    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    xAxis: { type: "category", data: Object.keys(data), axisLabel: { interval: 0 } },
-    yAxis: { type: "value", name: "数量" },
-    series: [{ data: Object.values(data), type: "bar", itemStyle: { color: "#5470C6" } }],
-  };
-};
 </script>
 
 <style scoped>
@@ -355,77 +320,5 @@ const initMedicineTypeChart = (data: any) => {
   width: 100%;
   height: 400px;
   margin-bottom: 20px;
-}
-
-.page-title {
-  font-size: 2em;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.chart-container {
-  width: 100%;
-  height: 400px;
-  margin-bottom: 30px;
-  padding: 20px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.el-card {
-  background-color: #f9f9f9;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-.page-title {
-  font-size: 2.5em;
-  font-weight: 600;
-  color: #2c3e50;
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.chart-container {
-  width: 100%;
-  height: 420px;
-  margin-bottom: 30px;
-  padding: 25px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
-}
-
-.chart-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.el-card {
-  background-color: #f4f6f8;
-  border-radius: 15px;
-  padding: 30px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.el-card:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-}
-
-.el-row {
-  margin-bottom: 25px;
-}
-
-.el-tooltip {
-  font-size: 0.9em;
-  color: #555;
-  background-color: #eee;
-  padding: 8px;
-  border-radius: 8px;
 }
 </style>

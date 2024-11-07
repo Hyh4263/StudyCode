@@ -9,6 +9,7 @@ import {
     reqUpdatedPwd,
     reqRegister,
     reqUpdatedUserInfo,
+    reqUploadAvatar,
 } from "@/api/user/index";
 import { SET_TOKEN, GET_TOKEN, REMOVE_TOKEN } from "@/utils/token";
 import { cloneDeep } from "lodash";
@@ -173,6 +174,15 @@ const useUserStore = defineStore("User", {
                 return response;
             } catch (error) {
                 throw new Error("头像上传失败");
+            }
+        },
+
+        async upload(formData: FormData) {
+            try {
+                const response = await reqUploadAvatar(formData);
+                return response;
+            } catch (error) {
+                throw new Error("图片上传失败");
             }
         },
 

@@ -14,6 +14,8 @@ const API = {
   illnessDelete_URL: "/illness/deleteIllness/",
   // http://localhost:8080/illness_kind/findList
   illnessKindList_URL: "/illness_kind/findList",
+  deleteImg_URL: "/api/user/deleteUploadByUrl"
+
 };
 
 // 获取疾病信息
@@ -38,3 +40,6 @@ export const reqDeleteIllnessById = (Id: number) =>
 
 // 获取所有疾病种类信息
 export const reqIllnessKindList = () => request.get(API.illnessKindList_URL);
+
+export const reqDeleteImg = (url: string) =>
+  request.delete<any, any>(API.deleteImg_URL + "?url=" + url);
