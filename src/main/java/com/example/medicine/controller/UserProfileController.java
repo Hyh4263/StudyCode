@@ -1,5 +1,6 @@
 package com.example.medicine.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.medicine.dao.ImageDao;
 import com.example.medicine.dto.ResponseDto;
 import com.example.medicine.entity.Image;
@@ -28,7 +29,7 @@ public class UserProfileController {
     @Value("${kkBlog.ip-address}")
     private String ipAddress;
 
-        @Value("${server.port}")
+    @Value("${server.port}")
     private String port;
 
 
@@ -63,7 +64,7 @@ public class UserProfileController {
                 + File.separator + (date.get(Calendar.MONTH) + 1) + File.separator + (date.get(Calendar.DATE));
         File dateDirs = new File(folderPath);
         //新文件
-        File newFile = new File( imagePath + File.separator + dateDirs + File.separator + newFileName);
+        File newFile = new File(imagePath + File.separator + dateDirs + File.separator + newFileName);
         //判断目标文件所在的目录是否存在
         if (!newFile.getParentFile().exists()) {
             //如果目标文件所在的目录不存在，则创建父目录
@@ -86,14 +87,41 @@ public class UserProfileController {
         saveImage.setPath(("/images/" + folderPath + "/" + newFileName).replaceAll("\\\\", "/"));
         saveImage.setUrl((protocol + "://" + ipAddress + ":" + port + "/images/" + folderPath + "/" + newFileName).replaceAll("\\\\", "/"));
         imageDao.insert(saveImage);
-        User user = new User();
-        user.setId(Integer.parseInt(userId));
-        user.setImgPath(saveImage.getUrl());
-        userService.save(user);
+
         //完整的url
-        return ResponseDto.Success("上传成功", saveImage.getPath());
+        return ResponseDto.Success("上传成功", saveImage.getUrl());
     }
 
+    //删除上传图片
+    @DeleteMapping("/deleteUploadByUrl")
+    public ResponseDto deleteUploadByUrl(@RequestParam String url) {
+        //Image uploaded successfully: http://localhost:8081/images/2024/11/6/20241106164222371ab69ef7b-c265-4284-a45e-e052aede5709.png
+        //根据传递的url找到图片
+        QueryWrapper<Image> wrapper = new QueryWrapper<>();
+        wrapper.eq("url", url);
+        Image image = imageDao.selectOne(wrapper);
+        if (image == null) {
+            return ResponseDto.Fail("图片不存在数据库");
+        }
+        //根据图片路径找到本地存储图片文件
+//        D:\data\images\
+        File file = new File("D:\\data" + image.getPath());
+
+
+        if (!file.exists()) {
+            return ResponseDto.Fail("图片不存在本地");
+        }
+        // 删除该图片文件
+        file.delete();
+        //再删除数据库记录
+//        int i = imageDao.deleteById(image.getUrl());
+        int i = imageDao.delete(wrapper);
+        if (i == 0) {
+            return ResponseDto.Fail("删除失败");
+        }
+        return ResponseDto.Success("删除成功", null);
+
+    }
 
     // 更换头像
     @ResponseBody

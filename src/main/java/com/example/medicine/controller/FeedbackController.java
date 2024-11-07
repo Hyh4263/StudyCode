@@ -32,7 +32,7 @@ public class FeedbackController extends BaseController<Feedback> {
 //        }
         Page<Feedback> feedBacksList = feedbackService.findFeedBacksList(pageNow, pageSize);
         HashMap<String, Object> map = new HashMap<>();
-        if (feedBacksList == null){
+        if (feedBacksList == null) {
             return Result.fail("没有查询到反馈信息");
         }
         map.put("feedBacksList", feedBacksList.getRecords());
@@ -50,7 +50,7 @@ public class FeedbackController extends BaseController<Feedback> {
     public Result findFeedBackOne(@PathVariable Integer id) {
         Map<String, Object> map = new HashMap<>();
         Feedback feedbackById = feedbackService.get(id);
-        if (feedbackById == null){
+        if (feedbackById == null) {
             return Result.fail("反馈信息不存在");
         }
         map.put("FeedBack", feedbackById);
@@ -69,15 +69,21 @@ public class FeedbackController extends BaseController<Feedback> {
 //        if (loginUser.getRoleStatus() != 1) {
 //            return Result.fail("权限不足");
 //        }
-        if (Assert.isEmpty(feedback.getId())) {
-            //添加
-            QueryWrapper<Feedback> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("content", feedback.getContent());
-            Feedback one = feedbackService.getOne(queryWrapper);
-            if (one != null) {
-                if (one.getName().equals(feedback.getName())){
-                    return Result.fail("添加失败，该用户已经存在相同信息反馈");
-                }
+        if (Assert.isEmpty(feedback)) {
+            return Result.fail("参数错误");
+        }
+        if (Assert.isEmpty(feedback.getUserId())) {
+            return Result.fail("请先登录");
+        }
+
+        QueryWrapper<Feedback> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("content", feedback.getContent());
+        queryWrapper.eq("user_id", feedback.getUserId());
+        queryWrapper.eq("contact_method", feedback.getContact());
+        Feedback one = feedbackService.getOne(queryWrapper);
+        if (one != null) {
+            if (one.getName().equals(feedback.getName())) {
+                return Result.fail("添加失败，该用户已经存在相同信息反馈");
             }
         }
 
@@ -108,7 +114,7 @@ public class FeedbackController extends BaseController<Feedback> {
         if (feedback != null) {
             feedbackService.delete(id);
             return Result.ok();
-        }else {
+        } else {
             return Result.fail("要删除的反馈不存在,删除失败");
         }
 

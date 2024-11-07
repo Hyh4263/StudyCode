@@ -50,6 +50,11 @@ public class Illness {
     private String illnessSymptom;
 
     /**
+     * 疾病的图片地址
+     */
+    private String imgPath;
+
+    /**
      * 特殊的症状
      */
     private String specialSymptom;

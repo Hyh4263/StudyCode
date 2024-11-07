@@ -116,4 +116,13 @@ public class MedicineController extends BaseController<Medicine> {
         return Result.ok();
     }
 
+    /**
+     * 查询所有药品
+     */
+    @GetMapping("allMedicines")
+    public Result allMedicines() {
+        return Result.ok(medicineService.all());
+    }
+
+
 }

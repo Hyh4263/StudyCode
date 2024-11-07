@@ -119,6 +119,7 @@ public class IllnessController extends BaseController<Illness> {
             QueryWrapper<Illness> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("illness_name", illness.getIllnessName());
             queryWrapper.eq("kind_id", illness.getKindId());
+            queryWrapper.eq("img_path",illness.getImgPath());
             if (illnessService.getOne(queryWrapper) != null) {
                 return Result.fail("添加失败，该 illnesses 已经存在");
             }
