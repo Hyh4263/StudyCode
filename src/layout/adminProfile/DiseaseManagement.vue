@@ -1,6 +1,6 @@
 <template>
   <el-empty v-if="loading" description="正在加载..." class="empty-state" />
-  <el-card style="height: 100%" v-else>
+  <el-card style="height: 760px" v-else>
     <div class="disease-management">
       <el-container>
         <el-header>
@@ -117,7 +117,7 @@
                 type="textarea"
                 v-model="currentDisease.illness_symptom"
                 :disabled="isReadOnly"
-                :rows="3"
+                :rows="5"
               />
             </el-form-item>
             <el-form-item label="特殊症状" prop="illness_symptom">
@@ -140,10 +140,10 @@
               <el-input v-model="currentDisease.update_time" disabled />
             </el-form-item>
           </el-form>
-          <template v-slot:footer>
+          <div v-if="!isReadOnly">
             <el-button @click="closeDialog">取消</el-button>
             <el-button type="primary" @click="submitForm">提交</el-button>
-          </template>
+          </div>
         </el-dialog>
       </el-container>
     </div>
@@ -159,7 +159,6 @@ import {
   reqAddOrUpdateIllness,
   reqDeleteIllnessById,
   reqIllnessKindList,
-  reqDeleteImg,
 } from "@/api/illness/index";
 import { ElNotification } from "element-plus";
 import useUserStore from "@/stores/modules/user";
@@ -404,8 +403,7 @@ const submitForm = async () => {
 const deleteDisease = async (row: any) => {
   try {
     // 删除疾病的图片文件
-    const deleteImgRes = await reqDeleteImg(row.img_path);
-    console.log("删除图片结果:", deleteImgRes);
+    const deleteImgRes = await userStore.deleteImg(row.img);
     if (deleteImgRes.code === 200) {
       const result: any = await reqDeleteIllnessById(row.id);
       if (result.code === 200) {
@@ -428,6 +426,7 @@ const deleteDisease = async (row: any) => {
 
 <style scoped>
 .disease-management {
+  height: 760px;
   padding: 20px;
 }
 

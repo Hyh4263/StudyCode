@@ -1,6 +1,6 @@
 <template>
   <div class="header-content">
-    <Logo />
+    <!-- <Logo /> -->
 
     <!-- Search Bar with Button moved near Logo -->
     <div class="search-container">
@@ -21,22 +21,24 @@
       </el-input>
     </div>
 
-    <el-menu
-      collapse="false"
-      class="nav-menu"
-      mode="horizontal"
-      :router="true"
-      ellipsis="false"
-    >
-      <el-menu-item
-        v-for="item in menuItems"
-        :key="item.index"
-        :index="item.index"
-        @click="navigateTo(item.index)"
+    <div class="menu-wrapper">
+      <el-menu
+        collapse="false"
+        class="nav-menu"
+        mode="horizontal"
+        :router="true"
+        ellipsis="false"
       >
-        {{ item.label }}
-      </el-menu-item>
-    </el-menu>
+        <el-menu-item
+          v-for="item in menuItems"
+          :key="item.index"
+          :index="item.index"
+          @click="navigateTo(item.index)"
+        >
+          {{ item.label }}
+        </el-menu-item>
+      </el-menu>
+    </div>
 
     <!-- User Login/Logout -->
     <div v-if="!isLoggedIn" class="login-buttons">
@@ -108,6 +110,11 @@ const goToRegister = () => {
   width: 100%;
   padding: 0 20px;
 }
+.menu-wrapper {
+  flex: 0 0 500px; /* 固定菜单宽度 */
+  display: flex;
+  justify-content: center;
+}
 
 .nav-menu {
   flex-grow: 1;
@@ -140,6 +147,7 @@ const goToRegister = () => {
 .login-buttons {
   display: flex;
   align-items: center;
-  margin-left: 20px;
+  /* margin-left: 10px; */
+  margin-left: 10%;
 }
 </style>

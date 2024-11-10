@@ -38,7 +38,7 @@
             @size-change="sizeChange"
             v-model:current-page="currentPage"
             v-model:page-size="pageSize"
-            :page-sizes="[3, 5, 7, 9]"
+            :page-sizes="[3, 6, 7, 9]"
             :background="true"
             layout="prev, pager, next, jumper, ->, sizes, total"
             :total="total"
@@ -54,14 +54,16 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import Header from "@/components/header/index.vue";
 import Footer from "@/components/footer/index.vue";
-import { reqIllnessList } from "@/api/illness/index.ts";
+import { ElNotification, ElMessage } from "element-plus";
+
+import { reqIllnessList } from "@/api/illness/index";
 
 const pageTitle = ref("全部");
 const illnessItems = ref<any[]>([]);
 const loading = ref(false); // 添加加载状态
 
 const currentPage = ref(1);
-const pageSize = ref(5);
+const pageSize = ref(6);
 const total = ref<number>(0);
 
 const router = useRouter();
@@ -79,7 +81,6 @@ const getIllnesses = async (page = 1) => {
   currentPage.value = page;
   try {
     const result: any = await reqIllnessList(currentPage.value, pageSize.value);
-    console.log("疾病列表数据", result);
     if (result.code === 200) {
       total.value = result.data.totalElements;
       illnessItems.value = result.data.illness.map((item: any) => ({
@@ -92,7 +93,10 @@ const getIllnesses = async (page = 1) => {
       }));
     }
   } catch (error) {
-    console.error("获取疾病列表失败", error);
+    ElNotification({
+      type: "error",
+      message: "获取疾病列表失败",
+    });
   } finally {
     loading.value = false; // 结束加载
   }

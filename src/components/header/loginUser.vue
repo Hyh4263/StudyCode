@@ -50,10 +50,26 @@ export default {
 };
 </script>
 <style scoped>
-.example-showcase .el-dropdown-link {
+.el-dropdown-link {
+  width: 100px;
   cursor: pointer;
-  color: var(--el-color-primary);
+  /* color: var(--el-color-primary); */
   display: flex;
   align-items: center;
+  font-weight: 500;
+}
+
+.el-icon--right {
+  margin-left: 5px; /* 调整图标与用户名的间距 */
+  font-size: 14px; /* 根据需要调整图标大小 */
+}
+
+.el-dropdown-menu {
+  min-width: 150px; /* 设置下拉菜单宽度 */
+}
+
+.el-dropdown-item {
+  padding: 10px 20px; /* 设置菜单项的内边距 */
+  font-size: 14px; /* 适当的字体大小 */
 }
 </style>

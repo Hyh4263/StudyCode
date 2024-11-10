@@ -1,5 +1,4 @@
 <template>
-  
   <div class="common-layout">
     <el-container class="container">
       <Header />
@@ -67,7 +66,7 @@ import Header from "@/components/header/index.vue";
 import Footer from "@/components/footer/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
-import { reqIllnessDetails } from "@/api/illness/index.ts";
+import { reqIllnessDetails } from "@/api/illness/index";
 
 interface IllnessInfo {
   imgPath: string;
@@ -103,27 +102,32 @@ const loading = ref(true);
 
 const fetchIllnessDetails = async (id: number) => {
   try {
-    const { code, data } = await reqIllnessDetails(id);
-    if (code === 200 && data) {
-      const { illness, medicine } = data;
+    const res: any = await reqIllnessDetails(id);
+    console.log("疾病详情数据:", res);
+    if (res.code === 200) {
+      // const { illness, medicine } = res.data.illnessDetail;
+      const illnessDetail = res.data.illnessDetail.illness;
+
+      const medicineList = res.data.illnessDetail.medicine;
+
       eczemaInfo.value = {
-        imgPath: illness.imgPath || "/mnt/data/image.png",
-        title: illness.illnessName,
-        description: illness.includeReason,
-        generalSymptoms: illness.illnessSymptom,
-        specialSymptoms: illness.specialSymptom,
+        imgPath: illnessDetail.imgPath || "/mnt/data/image.png",
+        title: illnessDetail.illnessName,
+        description: illnessDetail.includeReason,
+        generalSymptoms: illnessDetail.illnessSymptom,
+        specialSymptoms: illnessDetail.specialSymptom,
       };
-      medicines.value = medicine.map((item: any) => ({
+      medicines.value = medicineList.map((item: any) => ({
         medicineId: item.id,
         imgPath: item.imgPath,
         medicineName: item.medicineName,
         medicineCategory: item.keyword,
-        drugQuote: '"是药三分毒，切忌不要乱吃药！"',
+        drugQuote: '"是药三分毒,切忌不要乱吃药！"',
         medicineUsage: item.medicineEffect,
         medicineBrand: item.medicineBrand,
       }));
     } else {
-      console.error("Error fetching illness details: ", data?.message);
+      console.error("Error fetching illness details: ", res.message);
     }
   } catch (error) {
     console.error("Error fetching illness details:", error);

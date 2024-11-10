@@ -10,6 +10,9 @@ import {
     reqRegister,
     reqUpdatedUserInfo,
     reqUploadAvatar,
+    reqUploadVideo,
+    reqDeleteVideo,
+    reqDeleteImg,
 } from "@/api/user/index";
 import { SET_TOKEN, GET_TOKEN, REMOVE_TOKEN } from "@/utils/token";
 import { cloneDeep } from "lodash";
@@ -30,6 +33,7 @@ const useUserStore = defineStore("User", {
         token: GET_TOKEN(),
         id: "",
         userAccount: "",
+        status: "",
         userName: "",
         userAge: "",
         userSex: "",
@@ -65,6 +69,7 @@ const useUserStore = defineStore("User", {
                 this.userEmail = result.data.userEmail;
                 this.userTel = result.data.userTel;
                 this.roleStatus = result.data.roleStatus;
+                this.status = result.data.status;
                 this.avatar = result.data.imgPath;
                 this.createTime = result.data.createTime;
                 return "ok";
@@ -183,6 +188,32 @@ const useUserStore = defineStore("User", {
                 return response;
             } catch (error) {
                 throw new Error("图片上传失败");
+            }
+        },
+
+        async uploadVideo(formData: FormData) {
+            try {
+                const response = await reqUploadVideo(formData);
+                return response;
+            } catch (error) {
+                throw new Error("视频上传失败");
+            }
+        },
+
+        async deleteImg(url: string) {
+            try {
+                const response = await reqDeleteImg(url);
+                return response;
+            } catch (error) {
+                throw new Error("图片删除失败");
+            }
+        },
+        async deleteVideo(url: string) {
+            try {
+                const response = await reqDeleteVideo(url);
+                return response;
+            } catch (error) {
+                throw new Error("视频删除失败");
             }
         },
 

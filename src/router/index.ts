@@ -40,6 +40,11 @@ const router = createRouter({
       name: "illnessDetail",
       component: () => import("@/views/illness/detail/index.vue"),
     },
+    {
+      path: "/healthy/:id",
+      name: "healthyDetail",
+      component: () => import("@/views/health/detail/index.vue"),
+    },
     // {
     //   path: '/user/index',
     //   name: 'userinfo',
@@ -77,6 +82,12 @@ const router = createRouter({
       name: "FeedBack",
       component: () => import("@/views/feedback/index.vue"),
     },
+    {
+      path: "/health",
+      name: "Health",
+      component: () => import("@/views/health/index.vue"),
+    },
+
 
     {
       path: "/search",

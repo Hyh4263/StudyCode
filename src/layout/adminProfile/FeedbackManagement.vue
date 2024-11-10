@@ -95,7 +95,7 @@
         </el-main>
 
         <!-- Dialog for Viewing/Editing Feedback -->
-        <el-dialog v-model="isDialogVisible" :title="dialogTitle" width="500px">
+        <el-dialog v-model="isDialogVisible" :title="dialogTitle" width="800px">
           <el-form
             :model="currentFeedback"
             ref="feedbackForm"
@@ -122,12 +122,17 @@
                 rows="3"
               />
             </el-form-item>
+
             <el-form-item label="状态" prop="status">
-              <el-select v-model="currentFeedback.status" :disabled="isReadOnly">
-                <el-option label="未处理" value="1"></el-option>
-                <el-option label="已处理" value="2"></el-option>
+              <template v-if="isReadOnly">
+                <el-input :value="formatStatus(currentFeedback.status)" disabled />
+              </template>
+              <el-select v-else v-model="currentFeedback.status" placeholder="请选择状态">
+                <el-option label="未处理" :value="1"></el-option>
+                <el-option label="已处理" :value="2"></el-option>
               </el-select>
             </el-form-item>
+
             <el-form-item label="类型" prop="type">
               <el-input :value="typeFormatted" :disabled="true" />
             </el-form-item>
@@ -191,11 +196,11 @@ onMounted(() => {
 
 // 计算属性用于格式化字段
 const contactMethodFormatted = computed(() => {
-  return currentFeedback.contactMethod === 1 ? "Email" : "Phone";
+  return currentFeedback.contactMethod === "1" ? "Email" : "Phone";
 });
 
 const typeFormatted = computed(() => {
-  return currentFeedback.type === 1 ? "建议" : "问题";
+  return currentFeedback.type === "1" ? "建议" : "问题";
 });
 
 const formatContactMethod = (row: any) => {

@@ -1,7 +1,7 @@
 <template>
   <el-empty v-if="loading" description="正在加载..." class="empty-state" />
 
-  <el-card style="height: 100%" v-else>
+  <el-card style="height: 760px" v-else>
     <div class="disease-management">
       <el-container>
         <el-header>
@@ -17,10 +17,12 @@
             <el-table-column prop="name" label="名称" width="150"></el-table-column>
             <el-table-column prop="band" label="品牌" width="150"></el-table-column>
             <el-table-column
+              prop="type"
               label="分类"
               width="150"
-              :formatter="formatTypeLabel"
+              :formatter="(row) => formatTypeLabel(row.type)"
             ></el-table-column>
+
             <el-table-column prop="price" label="价格" width="150"></el-table-column>
             <el-table-column prop="updatedTime" label="更新时间" width="150">
             </el-table-column>
@@ -82,13 +84,27 @@
             <el-form-item label="品牌" prop="band">
               <el-input v-model="currentMedicine.band" :disabled="isReadOnly" />
             </el-form-item>
-            <el-form-item label="分类" prop="type">
+            <!-- <el-form-item label="分类" prop="type">
               <el-select v-model="currentMedicine.type" :disabled="isReadOnly">
                 <el-option label="西药" value="0"></el-option>
                 <el-option label="中药" value="1"></el-option>
                 <el-option label="中成药" value="2"></el-option>
               </el-select>
+            </el-form-item> -->
+
+            <el-form-item label="分类" prop="type">
+              <!-- 当表单是只读模式时，显示分类的中文标签 -->
+              <template v-if="isReadOnly">
+                <el-input :value="formatTypeLabel(currentMedicine.type)" disabled />
+              </template>
+              <!-- 在非只读模式下显示下拉选择框 -->
+              <el-select v-else v-model="currentMedicine.type" placeholder="请选择分类">
+                <el-option label="西药" :value="0"></el-option>
+                <el-option label="中药" :value="1"></el-option>
+                <el-option label="中成药" :value="2"></el-option>
+              </el-select>
             </el-form-item>
+
             <el-form-item label="功效" prop="effect">
               <el-input
                 type="textarea"
@@ -105,10 +121,10 @@
                 :rows="3"
               />
             </el-form-item>
-            <el-form-item label="使用方法" prop="use">
+            <el-form-item label="使用方法" prop="usAge">
               <el-input
                 type="textarea"
-                v-model="currentMedicine.use"
+                v-model="currentMedicine.usAge"
                 :disabled="isReadOnly"
                 :rows="3"
               />
@@ -156,7 +172,6 @@ import {
   reqHasMedicineByOne,
   reqAddOrUpdateMedicine,
   reqDeleteMedicineById,
-  reqDeleteImg,
 } from "@/api/medicine/index";
 import { ElNotification, ElMessage } from "element-plus";
 import type { UploadFile } from "element-plus";
@@ -184,14 +199,14 @@ const user = computed(() => ({
   id: userStore.id,
 }));
 
-// 将数字类型转换为中文显示
-const formatTypeLabel = (row: any) => {
+// 格式化分类标签，将数字类型转换为对应的中文标签
+const formatTypeLabel = (type: string) => {
   const typeMap = {
-    "0": "西药",
-    "1": "中药",
-    "2": "中成药",
+    0: "西药",
+    1: "中药",
+    2: "中成药",
   };
-  return typeMap[row.type] || "";
+  return typeMap[type] || "未知分类"; // 如果类型不匹配，显示“未知分类”
 };
 
 // Pagination state
@@ -211,7 +226,7 @@ const medicines = ref([
     type: "",
     taboo: "",
     updatedTime: "",
-    use: "",
+    usAge: "",
   },
 ]);
 
@@ -227,7 +242,7 @@ const currentMedicine = reactive({
   type: "",
   taboo: "",
   updatedTime: "",
-  use: "",
+  usAge: "",
   interaction: "",
   file: null as File | null, // 修改这里，允许存储 File 对象或 null
 });
@@ -282,7 +297,7 @@ const submitForm = async () => {
         medicineBrand: currentMedicine.band || null,
         interaction: currentMedicine.interaction || null,
         taboo: currentMedicine.taboo || null,
-        useAge: currentMedicine.use || null,
+        usAge: currentMedicine.usAge || null,
         medicineType: currentMedicine.type || null,
         imgPath: imagePath, // 使用图片上传后的路径
         medicinePrice: currentMedicine.price || null,
@@ -323,6 +338,7 @@ const getMedicineList = async (pager = 1) => {
   const result: any = await reqMedicineList(currentPage.value, pageSize.value);
   if (result.code === 200) {
     total.value = result.data.totalElements;
+    console.log("当前药品列表:", result);
     medicines.value = result.data.medicineList.map((item: any) => {
       return {
         createTime: item.create_time,
@@ -335,7 +351,7 @@ const getMedicineList = async (pager = 1) => {
         price: item.medicine_price,
         type: item.medicine_type,
         taboo: item.taboo,
-        use: item.us_age,
+        usAge: item.us_age,
         updatedTime: formatTime(item.update_time),
       };
     });
@@ -346,7 +362,7 @@ const getMedicineList = async (pager = 1) => {
 // 获取单个药品信息
 const getMedicineById = async (Id: number) => {
   const result: any = await reqHasMedicineByOne(Id);
-  console.log("当前药品", result);
+  console.log("当前药品信息:", result);
   if (result.code === 200) {
     currentMedicine.id = result.data.medicine.id;
     currentMedicine.name = result.data.medicine.medicineName;
@@ -354,7 +370,7 @@ const getMedicineById = async (Id: number) => {
     currentMedicine.band = result.data.medicine.medicineBrand;
     currentMedicine.interaction = result.data.medicine.interaction;
     currentMedicine.taboo = result.data.medicine.taboo;
-    currentMedicine.use = result.data.medicine.usAge;
+    currentMedicine.usAge = result.data.medicine.usAge;
     currentMedicine.type = result.data.medicine.medicineType;
     currentMedicine.img = result.data.medicine.imgPath;
     currentMedicine.price = result.data.medicine.medicinePrice;
@@ -405,11 +421,8 @@ const handleEdit = (row: any) => {
 };
 
 const handleDelete = async (row: any) => {
-  console.log("删除药品:", row);
   try {
-    console.log("删除药品ID:", row.img);
-    const deleteImgRes = await reqDeleteImg(row.img);
-    console.log("删除图片结果:", deleteImgRes);
+    const deleteImgRes = await userStore.deleteImg(row.img);
     if (deleteImgRes.code === 200) {
       const deleteMedicineRes: any = await reqDeleteMedicineById(row.id);
       if (deleteMedicineRes.code === 200 && deleteImgRes.code === 200) {
@@ -461,6 +474,7 @@ const resetForm = () => {
 </script>
 <style scoped>
 .disease-management {
+  height: 760px;
   padding: 20px;
 }
 

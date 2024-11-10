@@ -26,6 +26,11 @@
               >登录</el-button
             >
           </el-form-item>
+          <el-form-item>
+            <el-button type="primary" size="default" class="login_btn" @click="register"
+              >注册</el-button
+            >
+          </el-form-item>
         </el-form>
       </el-main>
     </el-container>
@@ -51,7 +56,7 @@ let $router = useRouter();
 let $route = useRoute();
 let useStore = useUserStore();
 //收集账号与密码的数据
-let loginForm = reactive({ userAccount: "admin", userPwd: "admin" });
+let loginForm = reactive({ userAccount: "admin", userPwd: "admin123" });
 // 获取el-form组件
 let loginForms = ref();
 
@@ -77,6 +82,11 @@ const validatorpassword = (_rule: any, value: any, callback: any) => {
   } else {
     callback(new Error("密码长度至少五位"));
   }
+};
+
+// 注册按钮
+const register = () => {
+  $router.push({ path: "/user/register" });
 };
 
 // 登录按钮回调

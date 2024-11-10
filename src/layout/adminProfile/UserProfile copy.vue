@@ -9,11 +9,6 @@
               <el-card class="box-card">
                 <div class="profile-sidebar">
                   <div class="profile-userpic">
-                    <!-- <el-image
-                      style="width: 150px; height: 150px"
-                      :src="user.imgPath"
-                      alt="相关图片"
-                    /> -->
                     <img :src="user.imgPath" alt="User Avatar" />
                   </div>
                   <div class="profile-usertitle">
@@ -25,18 +20,6 @@
                   </div>
                   <div class="profile-userbuttons">
                     <el-menu @select="handleMenuItemClick">
-                      <el-menu-item index="3" disabled>
-                        <el-icon>
-                          <document />
-                        </el-icon>
-                        <span>Navigator Three</span>
-                      </el-menu-item>
-                      <el-menu-item index="7">
-                        <el-icon>
-                          <setting />
-                        </el-icon>
-                        <span>大屏</span>
-                      </el-menu-item>
                       <el-menu-item index="1">
                         <el-icon>
                           <setting />
@@ -49,23 +32,30 @@
                         </el-icon>
                         <span>智能医生</span>
                       </el-menu-item>
-                      <el-menu-item index="3">
+                      <!-- 仅管理员可见的菜单项 -->
+                      <el-menu-item v-if="isAdmin" index="3">
                         <el-icon>
                           <setting />
                         </el-icon>
                         <span>疾病管理</span>
                       </el-menu-item>
-                      <el-menu-item index="4">
+                      <el-menu-item v-if="isAdmin" index="4">
                         <el-icon>
                           <setting />
                         </el-icon>
                         <span>药品管理</span>
                       </el-menu-item>
-                      <el-menu-item index="5">
+                      <el-menu-item v-if="isAdmin" index="5">
                         <el-icon>
                           <setting />
                         </el-icon>
                         <span>反馈管理</span>
+                      </el-menu-item>
+                      <el-menu-item v-if="isAdmin" index="7">
+                        <el-icon>
+                          <setting />
+                        </el-icon>
+                        <span>Echart统计</span>
                       </el-menu-item>
                       <el-menu-item index="6">
                         <el-icon>
@@ -91,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import Header from "@/components/header/index.vue";
 import Footer from "@/components/footer/index.vue";
 import UserInfoForm from "@/components/UserInfoForm/UserInfoForm.vue";
@@ -116,6 +106,9 @@ const user = ref({
   userAge: userStore.userAge,
   userRole: userStore.roleStatus,
 });
+
+// 计算属性，判断当前用户是否为管理员
+const isAdmin = computed(() => userStore.roleStatus === 1);
 
 // 异步导入其他组件
 const asyncComponents = {
