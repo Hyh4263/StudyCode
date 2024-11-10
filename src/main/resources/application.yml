@@ -60,7 +60,7 @@ kkBlog:
   ip-address: localhost #系统运行的ip地址
   cookie-expire: 31536000 # cookie过期时间
   image-path: D:\data\images\ #图片保存路径
-  vue-image-path: D:\JavaWed\data\medicine\vue-project\src\assets\images\userImg\ #vue项目头像保存路径
+  video-path: D:\data\videos\ #视频保存路径
 
 
 

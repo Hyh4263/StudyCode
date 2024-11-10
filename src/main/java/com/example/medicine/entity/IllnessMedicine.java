@@ -1,6 +1,7 @@
 package com.example.medicine.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class IllnessMedicine {
     /**
      * 疾病id
      */
+    @TableField(value = "illness_id")
     private Integer illnessId;
 
     /**

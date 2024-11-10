@@ -167,6 +167,7 @@ public class MedicineService extends BaseService<Medicine> {
         }
         return results;
     }
+
     public Map<String, Object> findMedicineList(Integer page, Integer pageSize) {
         // 使用 MyBatis Plus 的 Page<> 对象进行分页查询
         Page<Map<String, Object>> pageResult = new Page<>(page, pageSize);
@@ -183,5 +184,10 @@ public class MedicineService extends BaseService<Medicine> {
 
     public Medicine getOne(QueryWrapper<Medicine> queryWrapper) {
         return medicineDao.selectOne(queryWrapper);
+    }
+
+    // 根据药品ID列表查询所有药品信息
+    public List<Medicine> findByIds(List<Integer> ids) {
+        return medicineDao.selectBatchIds(ids);
     }
 }

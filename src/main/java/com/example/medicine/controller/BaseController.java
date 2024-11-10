@@ -1,7 +1,10 @@
 package com.example.medicine.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.medicine.component.EmailClient;
 import com.example.medicine.dto.RespResult;
+import com.example.medicine.entity.Healthy;
 import com.example.medicine.entity.IllnessKind;
 import com.example.medicine.entity.User;
 import com.example.medicine.service.*;
@@ -103,4 +106,6 @@ public class BaseController<T> {
         loginUser = (User) session.getAttribute("loginUser");
         session.setAttribute("kindList", illnessKindService.findList());
     }
+
+
 }

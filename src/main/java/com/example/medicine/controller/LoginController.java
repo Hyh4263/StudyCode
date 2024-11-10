@@ -53,6 +53,8 @@ public class LoginController extends BaseController<User> {
         }
 
         user.setRoleStatus(0);
+        user.setStatus(1);
+
 //        http://localhost:8081/images/userImg/img_6.png
         user.setImgPath("http://localhost:8081" + user.getImgPath());
 
@@ -83,6 +85,9 @@ public class LoginController extends BaseController<User> {
         User loginUser = userService.getUserByAccountAndPassword(user.getUserAccount(), user.getUserPwd());
 
         if (Assert.notEmpty(loginUser)) {
+            if (loginUser.getStatus() == 0) {
+                return Result.fail("该用户已被禁用");
+            }
 
             session.setAttribute("loginUser", loginUser);
             System.out.println("loginUser = " + loginUser);

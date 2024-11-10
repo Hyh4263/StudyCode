@@ -1,7 +1,9 @@
 package com.example.medicine.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.medicine.dao.ImageDao;
 import com.example.medicine.dto.Result;
+import com.example.medicine.entity.Healthy;
 import com.example.medicine.entity.Image;
 import com.example.medicine.entity.User;
 import com.example.medicine.utils.Assert;
@@ -23,7 +25,6 @@ import java.util.*;
 @RestController
 @RequestMapping(value = "user")
 public class UserController extends BaseController<User> {
-
 
 
     /**
@@ -75,8 +76,6 @@ public class UserController extends BaseController<User> {
     }
 
 
-
-
     private String extractUsernameFromToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
@@ -86,5 +85,50 @@ public class UserController extends BaseController<User> {
         return claims != null ? claims.getSubject() : null;
     }
 
+    /**
+     * 根据用户ID获取用户信息
+     */
+    @GetMapping("/findUserById/{id}")
+    public Result findUserById(@PathVariable Integer id) {
+        User user = userService.get(id);
+        return user != null ? Result.ok(user) : Result.fail("获取用户信息失败");
+    }
+
+    /**
+     * 根据用户ID删除账户
+     */
+    @DeleteMapping("deleteUserById/{id}")
+    public Result deleteUserById(@PathVariable Integer id) {
+        int result = userService.delete(id);
+        return result != -1 ? Result.ok(result) : Result.fail("删除用户失败");
+    }
+
+    /**
+     * 保存用户
+     */
+    @PostMapping("/saveUser")
+    public Result saveUser(@RequestBody User user) {
+        return userService.save(user) != null ? Result.ok(user) : Result.fail("保存用户失败");
+    }
+
+    /**
+     * 分页查询相关疾病
+     */
+    @GetMapping("findUserList")
+    public Result findHealthy(@RequestParam(defaultValue = "1") Integer pageNow, @RequestParam(defaultValue = "10") Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        // 调用service层的分页查询方法
+        Page<User> userList = userService.findUserList(pageNow, pageSize);
+
+        if (userList == null) {
+            return Result.fail("没有查询到话题信息");
+        }
+        // 添加查询结果和其他信息到 map 中
+        map.put("userList", userList.getRecords());
+        map.put("totalPages", userList.getPages()); // 总页数
+        map.put("totalElements", userList.getTotal()); // 总记录数
+        map.put("currentPage", userList.getCurrent()); // 当前页码
+        return Result.ok(map);
+    }
 
 }

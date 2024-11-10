@@ -71,9 +71,14 @@ public class User {
     private String userTel;
 
     /**
-     * 角色状态，1代表管理员，0普通用户
+     * 角色状态，0普通用户，1管理员，2超级管理员
      */
     private Integer roleStatus;
+
+    /**
+     * 用户状态,1正常 2禁用
+     */
+    private Integer status;
 
     /**
      * 图片的地址

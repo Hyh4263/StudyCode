@@ -1,9 +1,11 @@
 package com.example.medicine.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.medicine.dao.UserDao;
 
 import com.example.medicine.dao.VerCodeMapper;
+import com.example.medicine.entity.Healthy;
 import com.example.medicine.entity.User;
 import com.example.medicine.entity.VerCode;
 import com.example.medicine.utils.*;
@@ -103,6 +105,15 @@ public class UserService extends BaseService<User> {
 
     public Map<String, Object> findList(Integer page, Integer pageSize) {
         return null;
+    }
+
+    public Page<User> findUserList(Integer pageNow, Integer pageSize) {
+
+        Page<User> HealthyPage = new Page<>(pageNow, pageSize);
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.orderByDesc("create_time");
+        Page<User> page = userDao.selectPage(HealthyPage, wrapper);
+        return page;
     }
 
     public void updateUserAvatarById(User user) {

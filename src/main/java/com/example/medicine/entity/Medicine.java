@@ -1,6 +1,7 @@
 package com.example.medicine.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -62,6 +63,7 @@ public class Medicine {
     /**
      * 用法用量
      */
+    @TableField(value = "us_age")
     private String usAge;
 
     /**

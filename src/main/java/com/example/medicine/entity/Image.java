@@ -16,6 +16,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName(value = "image")
 public class Image {
 
     @TableId(type = IdType.AUTO)

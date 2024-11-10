@@ -58,8 +58,38 @@ public class IllnessMedicineService extends BaseService<IllnessMedicine> {
         return illnessMedicineDao.selectById(id);
     }
 
+
     @Override
     public int delete(Serializable id) {
         return illnessMedicineDao.deleteById(id);
     }
+
+    /**
+     * 判断药品功效是否匹配疾病的症状
+     *
+     * @param medicineEffect 药品的功效描述
+     * @param illnessSymptom 疾病的症状描述
+     * @return 如果匹配则返回 true，否则返回 false
+     */
+    public boolean isEffectMatchingSymptom(String medicineEffect, String illnessSymptom) {
+        // 简单的关键词匹配，可以考虑更复杂的匹配逻辑，比如基于 NLP 或数据库中存储的标准化症状关键词
+        if (medicineEffect == null || illnessSymptom == null) {
+            return false;
+        }
+
+        // 将症状按逗号、空格等分隔成关键词数组，进行匹配
+        String[] symptoms = illnessSymptom.split("[,，、 ]");
+        for (String symptom : symptoms) {
+            if (medicineEffect.contains(symptom)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+//根据疾病ID查询所有列表
+    public List<IllnessMedicine> findList(QueryWrapper queryWrapper) {
+        return illnessMedicineDao.selectList(queryWrapper);
+    }
+
 }
