@@ -290,13 +290,14 @@ const resetForm = () => {
 
 <style scoped>
 .feedback-management {
+  height: 100%;
   padding: 20px;
 }
 
 .feedback-management-card {
   padding: 0;
   border-radius: 12px;
-  height: 790.22px;
+  height: 100%;
 }
 
 .el-header {

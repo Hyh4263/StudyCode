@@ -22,7 +22,7 @@ enum API {
     UPDATE_USER = "/user/updateUser",
     GET_ROLE_LIST = "/role/list",
     GET_ROLE_LIST_BY_ID = "/role/getRoleById",
-
+    getAllUser_URL = "/user/allUser",
     changeAvatar = "/api/user/changeAvatar",
     uploadAvatar = "/api/user/upload",
     uploadVideo = "/api/user/uploadVideo",
@@ -50,6 +50,9 @@ export const reqUpdatedPwd = (data: any) =>
 // 获取用户列表
 export const reqGetUserList = (pageNow: number, pageSize: number) =>
     request.get(API.GET_USER_LIST + "?pageNow=" + pageNow + "&pageSize=" + pageSize);
+
+// 获取所有用户
+export const reqGetAllUser = () => request.get(API.getAllUser_URL);
 // 更换用户头像
 export const reqChangeAvatar = (data: any) =>
     request.post<any, any>(API.changeAvatar, data);

@@ -20,15 +20,11 @@
             <el-table-column prop="email" label="邮箱" width="160"></el-table-column>
             <el-table-column prop="role" label="角色" width="150">
               <template #default="{ row }">
-                <el-tag
-                  :type="row.role === 2 ? 'danger' : row.role === 1 ? 'warning' : 'info'"
-                  effect="dark"
-                >
+                <el-tag :type="row.role === 'admin' ? 'danger' : 'info'" effect="dark">
                   {{ formatRole(row.role) }}
                 </el-tag>
               </template>
             </el-table-column>
-
             <el-table-column
               prop="status"
               label="状态"
@@ -184,7 +180,7 @@ const sizeChange = (newSize: number) => {
 
 // 获取角色的文本显示
 const formatRole = (role: number) => {
-  return role === 2 ? "超级管理员" : role === 1 ? "管理员" : "普通用户";
+  return role === 1 ? "管理员" : "用户";
 };
 
 // 格式化状态

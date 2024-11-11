@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100%">
     <el-card class="dashboard-list">
       <h4 class="gray">我的资料</h4>
       <div class="dashboard-list-static">
@@ -222,7 +222,7 @@ $margin-bottom: 20px;
 
 .dashboard-list {
   padding: 30px;
-  height: 900px; // Set a fixed height for a consistent layout
+  height: 100%; // Set a fixed height for a consistent layout
   background-color: white;
   border-radius: $border-radius;
 

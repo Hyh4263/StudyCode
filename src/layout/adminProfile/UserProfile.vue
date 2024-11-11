@@ -86,7 +86,7 @@
               </el-card>
             </el-col>
 
-            <el-col :span="18">
+            <el-col style="height: 900px" :span="18">
               <component :is="currentComponent" />
             </el-col>
           </el-row>

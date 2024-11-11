@@ -1,7 +1,7 @@
 <template>
   <el-empty v-if="loading" description="正在加载..." class="empty-state" />
 
-  <el-card style="height: 760px" v-else>
+  <el-card style="height: 100%" v-else>
     <div class="disease-management">
       <el-container>
         <el-header>
@@ -474,7 +474,7 @@ const resetForm = () => {
 </script>
 <style scoped>
 .disease-management {
-  height: 760px;
+  height: 100%;
   padding: 20px;
 }
 

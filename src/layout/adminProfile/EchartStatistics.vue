@@ -56,9 +56,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import ECharts from "@/components/Echarts/ECharts.vue";
-import { reqGetUserList } from "@/api/user/index";
+import { reqGetUserList,reqGetAllUser } from "@/api/user/index";
 import { reqIllnessList, reqIllness } from "@/api/illness/index";
 import { reqMedicineList, reqHasAllMedicines } from "@/api/medicine/index";
+import useUserStore from "@/stores/modules/user";
+
 // Chart options refs
 const diseaseCategoryOptions = ref({});
 const diseaseVisitOptions = ref({});
@@ -66,6 +68,7 @@ const genderOptions = ref({});
 const ageOptions = ref({});
 const registrationOptions = ref({});
 const medicineTypeOptions = ref({});
+
 
 // Fetch data on component mount
 onMounted(() => {
@@ -162,7 +165,7 @@ const fetchDiseaseData = () => {
 
 // Fetch user statistics
 const fetchUserStatistics = () => {
-  reqGetUserList().then((response) => {
+  reqGetAllUser().then((response) => {
     const data = response.data;
 
     // Process and initialize charts for gender, age, and registration

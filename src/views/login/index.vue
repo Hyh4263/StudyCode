@@ -66,10 +66,10 @@ const validatorUserName = (_rule: any, value: any, callback: any) => {
   // value：表单元素文本内容
   // 函数：如果符合条件callback方行通过，
   // 如果不符合条件callback方法，注入错误信息
-  if (value.length >= 5) {
+  if (value.length >= 3) {
     callback();
   } else {
-    callback(new Error("账号长度至少五位"));
+    callback(new Error("账号长度至少三位"));
   }
 };
 const validatorpassword = (_rule: any, value: any, callback: any) => {

@@ -285,7 +285,7 @@ const rules = {
 }
 .register_wrapper {
   width: 100%;
-  max-width: 500px;
+  max-width: 520px;
   padding: 40px;
   background: url("@/assets/images/register_form.png") no-repeat center center;
   background-size: cover;

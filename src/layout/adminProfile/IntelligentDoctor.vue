@@ -1,41 +1,43 @@
 <template>
-  <el-col :span="20">
-    <el-card class="box-card">
-      <div class="profile-content">
-        <h4>智能在线医生</h4>
-        <div class="chat-box">
-          <ChatMessage :messages="messages" />
-          <!-- 如果 isLoading 为 true，则显示加载提示 -->
-          <div v-if="isLoading" class="loading-message">智能医生正在搜索中...</div>
+  <div style="height: 100%">
+    <el-col :span="20">
+      <el-card class="box-card">
+        <div class="profile-content">
+          <h4>智能在线医生</h4>
+          <div class="chat-box">
+            <ChatMessage :messages="messages" />
+            <!-- 如果 isLoading 为 true，则显示加载提示 -->
+            <div v-if="isLoading" class="loading-message">智能医生正在搜索中...</div>
+          </div>
+          <el-input v-model="newMessage" placeholder="输入要咨询的内容..."></el-input>
+          <el-button type="primary" @click="sendMessage" :disabled="isLoading"
+            >发送</el-button
+          >
         </div>
-        <el-input v-model="newMessage" placeholder="输入要咨询的内容..."></el-input>
-        <el-button type="primary" @click="sendMessage" :disabled="isLoading"
-          >发送</el-button
-        >
-      </div>
-    </el-card>
-  </el-col>
+      </el-card>
+    </el-col>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
 import ChatMessage from "@/components/chat/index.vue";
 import { reqDoctorMessage } from "@/api/doctor/index";
+import useUserStore from "@/stores/modules/user";
+
+let userStore = useUserStore();
 
 // 存储用户信息
 const user = ref({
-  imgPath: "assets/images/profile.jpg",
-  userName: "张三",
-  userTel: "17879544343",
-  userEmail: "isxuewei@qq.com",
+  userName: userStore.userName,
 });
 
+// 消息队列
 // 消息队列
 const messages = ref([
   {
     sender: "doctor",
-    content:
-      "张三你好，我是您的智能专属医生陪伴，身体不舒服或者有任何需要咨询的问题，都可以向我提问，我会全心全意为您解答！",
+    content: `${user.value.userName}你好，我是您的智能专属医生陪伴，身体不舒服或者有任何需要咨询的问题，都可以向我提问，我会全心全意为您解答！`,
   },
 ]);
 
@@ -97,6 +99,12 @@ const sendMessage = async () => {
 .profile-sidebar {
   text-align: center;
 }
+.profile-content {
+  height: 100%;
+}
+.box-card {
+  /* height: 800px; */
+}
 
 .profile-userpic img {
   width: 200px;
@@ -105,8 +113,9 @@ const sendMessage = async () => {
 }
 
 .chat-box {
-  max-height: 300px;
-  overflow-y: auto;
+  /* height: 100%; */
+  height: 500px;
+  overflow: hidden;
   border: 1px solid #ebebeb;
   padding: 10px;
   margin-bottom: 10px;
