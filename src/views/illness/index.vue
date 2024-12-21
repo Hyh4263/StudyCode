@@ -114,6 +114,8 @@ onMounted(() => {
 <style scoped>
 .common-layout {
   position: absolute;
+  height: 130vh;
+
   inset: 0;
 }
 

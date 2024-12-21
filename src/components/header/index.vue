@@ -6,7 +6,7 @@
     <div class="search-container">
       <el-input
         v-model="searchQuery"
-        placeholder="Search..."
+        placeholder="请输入搜索内容"
         class="search-input"
         prefix-icon="Search"
         clearable
@@ -65,11 +65,12 @@ const searchQuery = ref("");
 
 // Define menu items
 const menuItems = ref([
-  { index: "/", label: "Home" },
-  { index: "/health", label: "Health" },
-  { index: "/medicine", label: "Medicine" },
-  { index: "/illness", label: "Illness" },
-  { index: "/feedback", label: "Feedback" },
+  { index: "/", label: "首页" },
+  { index: "/health", label: "健康" },
+  { index: "/medicine", label: "药品" },
+  { index: "/illness", label: "疾病" },
+  { index: "/feedback", label: "反馈" },
+  // { index: "/chat", label: "咨询" },
 ]);
 
 // Check if the user is logged in

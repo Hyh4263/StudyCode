@@ -6,55 +6,53 @@
         <div class="overlay"></div>
         <div class="content-main">
           <div class="header-section">
-            <h1>User Feedback</h1>
+            <h1>用户反馈</h1>
           </div>
           <form @submit.prevent="submitForm" class="form-report">
             <!-- 标题输入框 -->
             <label class="form-group">
-              <span>Title:</span>
+              <span>标题:</span>
               <input
                 v-model="title"
                 type="text"
                 class="input"
-                placeholder="Enter your feedback title"
+                placeholder="请输入反馈标题"
               />
             </label>
             <!-- 联系方式类型 -->
             <label class="form-group">
-              <span>Contact:</span>
+              <span>联系方式:</span>
               <select v-model="contactMethod" class="select">
-                <option :value="1">Email</option>
-                <option :value="2">Phone</option>
+                <option :value="1">邮件</option>
+                <option :value="2">电话</option>
               </select>
               <input
                 v-model="contact"
                 type="text"
                 class="input"
-                :placeholder="
-                  contactMethod === 1 ? 'Enter your email' : 'Enter your phone number'
-                "
+                :placeholder="contactMethod === 1 ? '请输入你的邮箱' : '请输入你的电话'"
               />
             </label>
             <!-- 反馈内容 -->
             <label class="form-group">
-              <span>Message:</span>
+              <span>反馈内容:</span>
               <textarea
                 v-model="content"
                 class="textarea"
-                placeholder="Type your message here"
+                placeholder="请输入你想反馈的内容"
               ></textarea>
             </label>
             <!-- 反馈主题 -->
             <label class="form-group">
-              <span>Type:</span>
+              <span>反馈类型:</span>
               <select v-model="type" class="select">
-                <option :value="1">Advice</option>
-                <option :value="2">Problem</option>
+                <option :value="1">建议</option>
+                <option :value="2">问题</option>
               </select>
             </label>
             <!-- 提交按钮 -->
             <div class="form-footer">
-              <button class="button">Send</button>
+              <button class="button">提交</button>
             </div>
           </form>
         </div>
@@ -147,7 +145,7 @@ const submitForm = async () => {
 /* 保持之前的样式不变 */
 .common-layout {
   position: absolute;
-  height: 100vh;
+  height: 130vh;
   inset: 0;
   display: flex;
   flex-direction: column;
@@ -184,12 +182,12 @@ const submitForm = async () => {
   width: 100%;
   padding: 40px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.85); /* Semi-transparent white background */
+  background: rgba(255, 255, 255, 0.85);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px); /* Slight blur effect for a frosted glass look */
+  backdrop-filter: blur(8px);
   z-index: 2;
-  max-height: 80vh; /* Limit height to enable scrolling */
-  overflow-y: auto; /* Enable vertical scrolling */
+  height: 80vh;
+  overflow-y: auto;
 }
 
 /* Custom scrollbar style */

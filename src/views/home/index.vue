@@ -7,13 +7,17 @@
       <el-main class="banner">
         <div class="banner-content">
           <div class="banner-text">
-            <h1 class="banner-title">Health <br /><span class="highlight">Care</span></h1>
+            <h1 class="banner-title">
+              智慧医药 <br /><span class="highlight"
+                >最好的医疗咨询和自我诊断健康中心</span
+              >
+            </h1>
             <p class="banner-description">
-              There are many variations of passages of Lorem Ipsum
+              The best healthcare and self diagnostic health center
             </p>
             <div class="banner-buttons">
-              <el-button type="primary">Contact Now</el-button>
-              <el-button>Get A Quote</el-button>
+              <el-button type="primary">立即开始</el-button>
+              <el-button>了解更多</el-button>
             </div>
           </div>
           <div class="banner-image">

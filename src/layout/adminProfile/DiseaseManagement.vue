@@ -269,6 +269,7 @@ const resetForm = () => {
     kind_id: "",
     illness_name: "",
     illness_symptom: "",
+    special_symptom: "",
     include_reason: "",
     update_time: "",
     img: "",

@@ -48,13 +48,14 @@
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="type" label="类型" width="100" :formatter="formatType">
+            <el-table-column prop="type" label="类型" width="100">
               <template #default="{ row }">
                 <el-tag :type="row.type === 1 ? 'info' : 'danger'" effect="dark">
-                  {{ formatType(row) }}
+                  {{ formatType(row.type) }}
                 </el-tag>
               </template>
             </el-table-column>
+
             <el-table-column label="操作" width="120" align="center">
               <template #default="scope">
                 <el-tooltip content="查看" placement="top">
@@ -134,8 +135,21 @@
             </el-form-item>
 
             <el-form-item label="类型" prop="type">
-              <el-input :value="typeFormatted" :disabled="true" />
+              <!-- 如果是只读模式，显示类型标签 -->
+              <template v-if="isReadOnly">
+                <el-input :value="formatType(currentFeedback.type)" disabled />
+              </template>
+
+              <!-- 如果不是只读模式，显示下拉选择框 -->
+              <el-select v-else v-model="currentFeedback.type" placeholder="请选择类型">
+                <el-option label="建议" :value="1"></el-option>
+                <el-option label="问题" :value="2"></el-option>
+              </el-select>
             </el-form-item>
+
+            <!-- <el-form-item label="类型" prop="type">
+              <el-input :value="typeFormatted" :disabled="true" />
+            </el-form-item> -->
             <el-form-item label="反馈时间" prop="createTime">
               <el-input v-model="currentFeedback.createTime" disabled />
             </el-form-item>
@@ -211,8 +225,8 @@ const formatStatus = (row: any) => {
   return row.status === 1 ? "未处理" : "已处理";
 };
 
-const formatType = (row: any) => {
-  return row.type === 1 ? "建议" : "问题";
+const formatType = (type: any) => {
+  return type === 1 ? "建议" : "问题";
 };
 
 const handleView = (row: any) => {

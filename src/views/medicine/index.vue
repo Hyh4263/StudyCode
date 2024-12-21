@@ -2,6 +2,7 @@
   <div class="common-layout">
     <el-container>
       <Header></Header>
+
       <el-main class="content">
 
         <el-empty v-if="loading" description="正在加载..." class="empty-state" />
@@ -44,8 +45,8 @@
           />
         </el-card>
       </el-main>
-      <Footer></Footer>
     </el-container>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -133,7 +134,7 @@ const getImageUrl = (imageUrl) => {
 <style scoped>
 .common-layout {
   position: absolute;
-  height: 100vh;
+  height: 180vh;
   inset: 0;
   display: flex;
   flex-direction: column;

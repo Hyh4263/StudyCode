@@ -87,6 +87,19 @@ const router = createRouter({
       name: "Health",
       component: () => import("@/views/health/index.vue"),
     },
+    // {
+    //   path: "/chat",
+    //   name: "Chat",
+    //   component: () => import("@/views/chat/ChatView.vue"),
+
+    // },
+    {
+      path: '/chat/:targetUserName',
+      name: 'Chat',
+      component: () => import('@/views/chat/ChatView.vue'),
+      props: true,
+    },
+
 
 
     {

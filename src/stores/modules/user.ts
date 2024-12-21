@@ -107,66 +107,12 @@ const useUserStore = defineStore("User", {
             }
         },
 
-        // async updateProfile(data: any) {
-        //     let result: any = await reqUpdatedUserInfo(data);
-        //     console.log(result);
-        //     let imgLocalPath = "@/assets/images/userImg/img_3.png"
-        //     if (result.code == 200) {
-        //         this.userName = result.data.userName;
-        //         this.userAge = result.data.userAge;
-        //         this.userSex = result.data.userSex;
-        //         this.userEmail = result.data.userEmail;
-        //         this.userTel = result.data.userTel;
-        //         this.roleStatus = result.data.roleStatus;
-        //         this.avatar = imgLocalPath + result.data.imgPath;
-        //         return "ok";
-        //     } else {
-        //         return Promise.reject(new Error(result.message));
-        //     }
-        // },
-
-        // async changeAvatar(formData: FormData) {
-        //     try {
-        //         const response = await reqChangeAvatar(formData);
-
-        //         // const response = await api.post("/user/changeAvatar", formData, {
-        //         //     headers: { "Content-Type": "multipart/form-data" },
-        //         // });
-        //         this.avatar = response.data.imgPath; // Update with the returned image path
-        //         return response;
-        //     } catch (error) {
-        //         throw new Error("头像上传失败");
-        //     }
-        // },
-
-        // async updateProfile(data: any) {
-        //     let result: any = await reqUpdatedUserInfo(data);
-        //     if (result.code == 200) {
-        //         // 更新用户信息
-        //         this.userName = result.data.userName;
-        //         this.avatar = `/images/${result.data.imgPath}`; // 使用相对路径
-        //         return "ok";
-        //     } else {
-        //         return Promise.reject(new Error(result.message));
-        //     }
-        // },
-
-        // async changeAvatar(formData: FormData) {
-        //     try {
-        //         const response = await reqChangeAvatar(formData);
-        //         this.avatar = `/images/${response.data.imgPath}`; // 更新返回的图片路径
-        //         return response;
-        //     } catch (error) {
-        //         throw new Error("头像上传失败");
-        //     }
-        // },
-
         async updateProfile(data: any) {
             let result: any = await reqUpdatedUserInfo(data);
             if (result.code == 200) {
                 // 更新用户信息
                 this.userName = result.data.userName;
-                this.avatar = `/images/${result.data.imgPath}`;  // 使用相对路径
+                this.avatar = `/images/${result.data.imgPath}`; // 使用相对路径
                 return "ok";
             } else {
                 return Promise.reject(new Error(result.message));
@@ -227,7 +173,18 @@ const useUserStore = defineStore("User", {
             }
         },
     },
-    getters: {},
+    getters: {
+        getUser: (state) => ({
+            id: state.id,
+            userName: state.userName,
+            userAccount: state.userAccount,
+            userAge: state.userAge,
+            userSex: state.userSex,
+            userEmail: state.userEmail,
+            avatar: state.avatar,
+            createTime: state.createTime,
+        }),
+    },
 });
 
 export default useUserStore;
