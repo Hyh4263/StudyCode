@@ -19,11 +19,11 @@
         </el-card>
       </el-col>
 
-      <!-- 在线用户列表 -->
+      <!-- 用户列表 -->
       <el-col :span="6" class="user-list">
         <el-card class="user-list-card">
           <div class="list-header">
-            <h4>在线用户列表</h4>
+            <h4>用户列表</h4>
           </div>
           <el-scrollbar class="list-scroll">
             <div
@@ -75,7 +75,7 @@ const messages = ref([
   },
 ]);
 
-// 在线用户列表
+// 用户列表
 const users = ref<User[]>([]);
 
 // 输入的消息和加载状态
@@ -116,7 +116,7 @@ const sendMessage = async () => {
   }
 };
 
-// 获取在线用户列表
+// 获取用户列表
 onMounted(() => {
   fetchDoctors();
 });
@@ -125,6 +125,7 @@ const fetchDoctors = async () => {
   try {
     const res = await fetchRealDoctors();
     const rawUsers = res.data;
+    console.log("原始用户列表:", rawUsers);
 
     // 过滤掉无效用户数据以及当前登录用户
     const validUsers = Object.values(rawUsers).filter(
@@ -142,10 +143,10 @@ const fetchDoctors = async () => {
       avatar: user.imgPath,
     }));
 
-    console.log("在线用户列表（过滤当前用户后）:", users.value);
+    console.log("用户列表（过滤当前用户后）:", users.value);
   } catch (error) {
-    console.error("获取在线用户列表失败:", error);
-    ElMessage.error("获取在线用户列表失败，请稍后重试。");
+    console.error("获取用户列表失败:", error);
+    ElMessage.error("获取用户列表失败，请稍后重试。");
   }
 };
 

@@ -14,7 +14,7 @@ import {
     reqDeleteVideo,
     reqDeleteImg,
 } from "@/api/user/index";
-import { SET_TOKEN, GET_TOKEN, REMOVE_TOKEN } from "@/utils/token";
+import { SET_TOKEN, GET_TOKEN, REMOVE_TOKEN, SET_USER, GET_USER, REMOVE_USER } from "@/utils/token";
 import { cloneDeep } from "lodash";
 
 function filterAsyncRoute(asnycRoute: any, routers: any) {
@@ -31,6 +31,7 @@ function filterAsyncRoute(asnycRoute: any, routers: any) {
 const useUserStore = defineStore("User", {
     state: () => ({
         token: GET_TOKEN(),
+        userInfo: GET_USER(),
         id: "",
         userAccount: "",
         status: "",
@@ -52,6 +53,7 @@ const useUserStore = defineStore("User", {
             if (result.code == 200) {
                 this.token = result.data;
                 SET_TOKEN(result.data);
+                SET_USER(result.data);
                 return "ok";
             } else {
                 return Promise.reject(new Error(result.data));
@@ -92,6 +94,7 @@ const useUserStore = defineStore("User", {
                 this.avatar = "";
                 this.id = "";
                 REMOVE_TOKEN();
+                REMOVE_USER();
                 return "ok";
             } else {
                 return Promise.reject(new Error(result.message));

@@ -110,7 +110,7 @@
               </template>
               <el-select v-else v-model="currentUser.roleStatus" placeholder="请选择角色">
                 <el-option label="普通用户" :value="0"></el-option>
-                <el-option label="管理员" :value="1"></el-option>
+                <el-option label="医师" :value="1"></el-option>
               </el-select>
             </el-form-item>
 
@@ -184,7 +184,7 @@ const sizeChange = (newSize: number) => {
 
 // 获取角色的文本显示
 const formatRole = (role: number) => {
-  return role === 2 ? "超级管理员" : role === 1 ? "管理员" : "普通用户";
+  return role === 2 ? "超级管理员" : role === 1 ? "医师" : "普通用户";
 };
 
 // 格式化状态

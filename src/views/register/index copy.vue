@@ -5,25 +5,11 @@
         <el-form
           class="register_form"
           :model="registerForm"
-          :rules="currentRules"
+          :rules="rules"
           ref="registerForms"
         >
           <h1>注册</h1>
           <h2>欢迎加入药品甄选</h2>
-
-          <!-- 注册类型选择 -->
-          <el-radio-group v-model="registerType" class="register-type">
-            <el-radio-button label="普通用户">普通用户</el-radio-button>
-            <el-radio-button label="医师">医师</el-radio-button>
-          </el-radio-group>
-
-          <el-form-item prop="userName">
-            <el-input
-              :prefix-icon="User"
-              v-model.trim="registerForm.userName"
-              placeholder="用户名"
-            ></el-input>
-          </el-form-item>
 
           <el-form-item prop="userAccount">
             <el-input
@@ -33,23 +19,11 @@
             ></el-input>
           </el-form-item>
 
-          <el-form-item prop="userPwd">
+          <el-form-item prop="userName">
             <el-input
-              type="password"
-              :prefix-icon="Lock"
-              v-model.trim="registerForm.userPwd"
-              show-password
-              placeholder="密码"
-            ></el-input>
-          </el-form-item>
-
-          <el-form-item prop="confirmPassword">
-            <el-input
-              type="password"
-              :prefix-icon="Lock"
-              v-model.trim="registerForm.confirmPassword"
-              show-password
-              placeholder="确认密码"
+              :prefix-icon="User"
+              v-model.trim="registerForm.userName"
+              placeholder="用户名"
             ></el-input>
           </el-form-item>
 
@@ -74,7 +48,7 @@
           <el-form-item prop="userSex">
             <el-select
               v-model="registerForm.userSex"
-              placeholder="请选择性别"
+              placeholder="性别"
               class="fixed-width"
             >
               <el-option label="男" value="male"></el-option>
@@ -86,7 +60,6 @@
             <el-input
               v-model.trim="registerForm.userTel"
               placeholder="电话"
-              @blur="validateTel"
               class="fixed-width"
             ></el-input>
           </el-form-item>
@@ -102,18 +75,23 @@
             ></el-input>
           </el-form-item>
 
-          <!-- 医师注册额外字段 -->
-          <el-form-item v-if="registerType === '医师'" prop="medicalLicenseNumber">
+          <el-form-item prop="userPwd">
             <el-input
-              v-model.trim="registerForm.medicalLicenseNumber"
-              placeholder="医师执业资格证书号"
+              type="password"
+              :prefix-icon="Lock"
+              v-model.trim="registerForm.userPwd"
+              show-password
+              placeholder="密码"
             ></el-input>
           </el-form-item>
 
-          <el-form-item v-if="registerType === '医师'" prop="idCard">
+          <el-form-item prop="confirmPassword">
             <el-input
-              v-model.trim="registerForm.idCard"
-              placeholder="身份证号码"
+              type="password"
+              :prefix-icon="Lock"
+              v-model.trim="registerForm.confirmPassword"
+              show-password
+              placeholder="确认密码"
             ></el-input>
           </el-form-item>
 
@@ -136,7 +114,7 @@
 
 <script setup lang="ts">
 import { User, Lock } from "@element-plus/icons-vue";
-import { reactive, ref, computed } from "vue";
+import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import useUserStore from "@/stores/modules/user";
@@ -147,8 +125,6 @@ const isGettingCode = ref(false);
 const countdown = ref(60);
 const $router = useRouter();
 const useStore = useUserStore();
-
-const registerType = ref("普通用户"); // 注册类型：普通用户或医师
 
 const registerForm = reactive({
   imgPath: "",
@@ -161,8 +137,6 @@ const registerForm = reactive({
   userEmail: "",
   userSex: "",
   userTel: "",
-  medicalLicenseNumber: null,
-  idCard: null,
 });
 
 const avatarImages = [
@@ -214,14 +188,7 @@ const getEmailCode = async () => {
   }
 };
 
-const validatorUserAccount = (_rule: any, value: any, callback: any) => {
-  if (value.length >= 6) {
-    callback();
-  } else {
-    callback(new Error("账号长度至少6位"));
-  }
-};
-
+// Validator functions
 const validatorUserName = (_rule: any, value: any, callback: any) => {
   if (value.length >= 2) {
     callback();
@@ -236,59 +203,6 @@ const validatorEmail = (_rule: any, value: any, callback: any) => {
     callback();
   } else {
     callback(new Error("请输入有效的邮箱地址"));
-  }
-};
-
-const validateTel = (_rule: any, value: any, callback: any) => {
-  const phoneRegex = /^\d{11}$/;
-  if (phoneRegex.test(value)) {
-    callback();
-  } else {
-    callback(new Error("请输入有效的电话号码"));
-  }
-};
-
-const validatorMedicalLicenseNumber = (_rule: any, value: any, callback: any) => {
-  // 医师执业资格证书号正则表达式
-  //   医师执业资格证书号: 102010100000001 （假设市级发证，县代码为00）
-  //   身份证号码: 123456789012345678
-  const medicalLicensePattern = /^(\d)(\d{2})(\d{2})(00|[\d]{2})(00|[\d]{2})(\d{6})$/;
-
-  if (!medicalLicensePattern.test(value)) {
-    return callback(new Error("请输入有效的医生执业资格证书编码"));
-  }
-
-  // 进一步验证证书流水码是否在000001-999999之间
-  const certificateSerial = value.slice(9);
-  const serialNumber = parseInt(certificateSerial, 10);
-
-  if (serialNumber < 1 || serialNumber > 999999) {
-    return callback(new Error("证书流水码必须在000001到999999之间"));
-  }
-
-  // 检查由省、自治区、直辖市卫生行政部门发证的情况
-  const provinceCode = value.slice(3, 5);
-  const cityCode = value.slice(5, 7);
-  const countyCode = value.slice(7, 9);
-
-  if (provinceCode !== "00" && cityCode === "00" && countyCode === "00") {
-    return callback();
-  }
-
-  // 检查由市级卫生行政部门发证的情况
-  if (cityCode !== "00" && countyCode === "00") {
-    return callback();
-  }
-
-  return callback(new Error("证书编码不符合发证规则"));
-};
-
-const validatorIdCard = (_rule: any, value: any, callback: any) => {
-  const idCardPattern = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-  if (idCardPattern.test(value)) {
-    callback();
-  } else {
-    callback(new Error("请输入有效的身份证号码"));
   }
 };
 
@@ -320,12 +234,6 @@ const register = async () => {
 
     selectRandomAvatar();
 
-    // 如果是普通用户注册，清空医师注册字段
-    if (registerType.value === "普通用户") {
-      registerForm.medicalLicenseNumber = null;
-      registerForm.idCard = null;
-    }
-
     console.log("注册信息:", registerForm);
     const res = await reqRegister(registerForm);
     if (res.code == 200 && res.data != null) {
@@ -341,40 +249,16 @@ const register = async () => {
   }
 };
 
-// 动态规则
-const rules = computed(() => {
-  if (registerType.value === "普通用户") {
-    return {
-      userAccount: [{ trigger: "blur", validator: validatorUserAccount }],
-      userName: [{ trigger: "blur", validator: validatorUserName }],
-      userEmail: [{ trigger: "blur", validator: validatorEmail }],
-      userPwd: [{ trigger: "blur", validator: validatorPassword }],
-      confirmPassword: [{ trigger: "blur", validator: validatorConfirmPassword }],
-      code: [{ required: true, message: "验证码不能为空", trigger: "blur" }],
-      userAge: [{ required: true, message: "请输入真实年龄", trigger: "blur" }],
-      userSex: [{ required: true, message: "请选择性别", trigger: "blur" }],
-      userTel: [{ trigger: "blur", validator: validateTel }],
-    };
-  } else {
-    return {
-      userAccount: [{ trigger: "blur", validator: validatorUserAccount }],
-      userName: [{ trigger: "blur", validator: validatorUserName }],
-      userEmail: [{ trigger: "blur", validator: validatorEmail }],
-      userPwd: [{ trigger: "blur", validator: validatorPassword }],
-      confirmPassword: [{ trigger: "blur", validator: validatorConfirmPassword }],
-      code: [{ required: true, message: "验证码不能为空", trigger: "blur" }],
-      userAge: [{ required: true, message: "请输入真实年龄", trigger: "blur" }],
-      userSex: [{ required: true, message: "请选择性别", trigger: "blur" }],
-      userTel: [{ trigger: "blur", validator: validateTel }],
-      medicalLicenseNumber: [
-        { trigger: "blur", validator: validatorMedicalLicenseNumber },
-      ],
-      idCard: [{ trigger: "blur", validator: validatorIdCard }],
-    };
-  }
-});
-
-const currentRules = computed(() => rules.value);
+// Validation rules
+const rules = {
+  userAccount: [{ trigger: "blur", validator: validatorUserName }],
+  userName: [{ trigger: "blur", validator: validatorUserName }],
+  userEmail: [{ trigger: "blur", validator: validatorEmail }],
+  userPwd: [{ trigger: "blur", validator: validatorPassword }],
+  confirmPassword: [{ trigger: "blur", validator: validatorConfirmPassword }],
+  code: [{ required: true, message: "验证码不能为空", trigger: "blur" }],
+  userAge: [{ required: true, message: "请输入真实年龄", trigger: "blur" }],
+};
 </script>
 
 <style lang="scss">
@@ -388,7 +272,7 @@ const currentRules = computed(() => rules.value);
 
 .app_wrapper {
   width: 100%;
-  height: 110vh;
+  height: 100vh;
   display: flex;
 
   justify-content: center;

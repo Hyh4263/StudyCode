@@ -14,3 +14,13 @@ export const GET_TOKEN = () => {
 export const REMOVE_TOKEN = () => {
     localStorage.removeItem("TOKEN");
 };
+
+export const SET_USER = (user: string) => {
+    sessionStorage.setItem("USER", user);
+};
+export const GET_USER = () => {
+    return sessionStorage.getItem("USER") || "";
+};
+export const REMOVE_USER = () => {
+    sessionStorage.removeItem("USER");
+};

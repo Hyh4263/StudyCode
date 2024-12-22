@@ -91,7 +91,7 @@ const validateContact = (): boolean => {
     }
   } else if (contactMethod.value === 2) {
     // Phone 验证规则
-    const phoneRegex = /^\d{10,11}$/; // 假设电话号码为10-11位数字
+    const phoneRegex = /^\d{11}$/; // 假设电话号码为11位数字
     if (!phoneRegex.test(contact.value)) {
       ElMessage({
         type: "warning",
