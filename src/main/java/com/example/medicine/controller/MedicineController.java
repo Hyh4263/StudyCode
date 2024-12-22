@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * 药品控制器
  *
- * @author XUEW
+ * @author Hyh
  */
 @RestController
 @RequestMapping("medicine")

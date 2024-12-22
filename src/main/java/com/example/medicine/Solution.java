@@ -3,36 +3,58 @@ package com.example.medicine;
 import java.util.*;
 
 
+  class TreeNode {
+    int val = 0;
+    TreeNode left = null;
+    TreeNode right = null;
+    public TreeNode(int val) {
+      this.val = val;
+    }
+  }
+
+
 public class Solution {
+
+    public static void main(String[] args) {
+        int[] preOrder = {1,2,4,7,3,5,6,8};
+        int[] vinOrder = {4,7,2,1,5,3,8,6};
+        TreeNode treeNode = new Solution().reConstructBinaryTree(preOrder, vinOrder);
+    }
     /**
      * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
      *
      *
-     * @param strs string字符串一维数组
-     * @return string字符串
+     * @param preOrder int整型一维数组
+     * @param vinOrder int整型一维数组
+     * @return TreeNode类
      */
-    public static void main(String[] args) {
-        String[] strs = {"abca","abc","abca","abc","abcc"};
-        System.out.println(new Solution().longestCommonPrefix(strs));
-//        String str  = "flower";
-//        String str1  = "flow";
-//
-//        String tem = "flow";
-//        System.out.println(tem.indexOf(str));
-//        System.out.println(tem.indexOf(str1));
-
+    public TreeNode reConstructBinaryTree (int[] preOrder, int[] vinOrder) {
+        // write code here
+        TreeNode root = reConstructBinaryTree_1(preOrder, 0, preOrder.length - 1,
+                                                vinOrder, 0, vinOrder.length - 1);
+        return  root;
     }
-    public String longestCommonPrefix (String[] strs) {
-        if (strs.length == 0) return "";
-        String tmp = strs[0];
-        for (int i = 1; i < strs.length; i++) {
-            while (strs[i].indexOf(tmp) != 0) { //如果返回的索引位置不是0
-
-                tmp = tmp.substring(0, tmp.length() - 1);
-
-            }
-
+    // 定义重构二叉树方法
+    // 前序遍历{1,2,4,7,3,5,6,8} 和 中序遍历{4,7,2,1,5,3,8,6}
+    public TreeNode reConstructBinaryTree_1(int[] pre, int startPre, int endPre,
+                                            int[] in, int startIn, int endIn) {
+        if (startPre > endPre || startIn > endIn) {
+            return null;
         }
-        return tmp;//一直在缩短tmp,直至缩短到公共前缀
+        // 创建根节点
+        TreeNode root = new TreeNode(pre[startPre]);
+        // 给根节点左右节点进行赋值
+        for (int i = startIn; i <= endIn; i++) {
+            if (in[i] == pre[startPre]) {
+                // 给左节点赋值
+                root.left = reConstructBinaryTree_1(pre, startPre + 1, startPre + i - startIn,in, startIn, i - 1);
+                // 给右节点赋值
+                root.right = reConstructBinaryTree_1(pre, i - startIn + startPre + 1, endPre,in, i + 1, endIn);
+
+                break;
+            }
+        }
+        return root;
+
     }
 }

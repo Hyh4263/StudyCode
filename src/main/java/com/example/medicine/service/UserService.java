@@ -9,6 +9,7 @@ import com.example.medicine.entity.Healthy;
 import com.example.medicine.entity.User;
 import com.example.medicine.entity.VerCode;
 import com.example.medicine.utils.*;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +51,7 @@ public class UserService extends BaseService<User> {
         return query(null);
     }
 
-    public List<User> UserList(){
+    public List<User> UserList() {
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
 //        userQueryWrapper.eq("role_status", 1);
         userQueryWrapper.orderByDesc("create_time");
@@ -83,6 +84,25 @@ public class UserService extends BaseService<User> {
         return userDao.selectOne(new QueryWrapper<User>().eq("user_account", userAccount));
     }
 
+    // 根据username查询所有用户
+    // select * from user where username != #{username};"
+
+    public List<User> selectAllUser(String username) {
+//        return userDao.selectList(new QueryWrapper<User>().ne("user_name", username));
+        return userDao.selectList(new QueryWrapper<User>().ne("user_name", username));
+
+    }
+
+    //根据username查询用户id
+    public Integer selectUserId(String username) {
+        return userDao.selectOne(new QueryWrapper<User>().eq("user_name", username)).getId();
+    }
+
+    //    selectUserDtoByUserId
+    public User selectUserByUserId(Integer id) {
+        return userDao.selectById(id);
+    }
+
     //根据用户账号和密码获取用户信息
     public User getUserByAccountAndPassword(String userAccount, String password) {
         return userDao.selectOne(new QueryWrapper<User>().eq("user_account", userAccount).eq("user_pwd", password));
@@ -98,8 +118,9 @@ public class UserService extends BaseService<User> {
         user.setUserPwd(null);
         return userDao.updateById(user);
     }
-    public User findUserByUserAccount(String userName){
-        return userDao.selectOne(new QueryWrapper<User>().eq("user_name",userName));
+
+    public User findUserByUserAccount(String userName) {
+        return userDao.selectOne(new QueryWrapper<User>().eq("user_name", userName));
     }
 
 
@@ -138,8 +159,6 @@ public class UserService extends BaseService<User> {
         if (result != 1) {
             throw new RuntimeException("Failed to update user avatar");
         }
-
-
 
 
     }

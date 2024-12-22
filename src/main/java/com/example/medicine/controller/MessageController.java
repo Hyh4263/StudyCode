@@ -1,23 +1,31 @@
 package com.example.medicine.controller;
 
 import com.example.medicine.dto.RespResult;
+import com.example.medicine.dto.ResponseMessage;
 import com.example.medicine.dto.Result;
 import com.example.medicine.entity.User;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.medicine.service.OnlineUserManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * 消息控制器
  *
- * @author XUEW
+ * @author Hyh
  */
 @RestController
 @RequestMapping("/message")
 public class MessageController extends BaseController<User> {
+    @Autowired
+    private OnlineUserManager onlineUserManager;
 
     /**
      * 发送消息
@@ -42,7 +50,6 @@ public class MessageController extends BaseController<User> {
 //            return Result.fail("解码失败");
 //        }
 //    }
-
     @PostMapping("/query")
     public Result query(@RequestBody String content) {
         try {
@@ -67,5 +74,27 @@ public class MessageController extends BaseController<User> {
             e.printStackTrace();
             return Result.fail("服务器错误，请稍后重试");
         }
+    }
+
+    //查找用户
+    @GetMapping("/findOnlineUser")
+    public Result findOnlineUser() {
+        List<User> userList = userService.all();
+        HashMap<String, Object> map = new HashMap<>();
+
+
+        userList.forEach(user -> {
+            if (!user.getUserAccount().equals("superAdmin") && !user.getUserAccount().equals(loginUser) ) {
+                //如果用户权限为1
+                if (user.getRoleStatus() ==  1){
+                    map.put(user.getUserAccount(), user); // 或者根据你的需求放入其他信息
+
+                }
+            }
+        });
+
+        return Result.ok(map);
+
+
     }
 }

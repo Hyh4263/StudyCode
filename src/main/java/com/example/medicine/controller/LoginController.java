@@ -16,6 +16,8 @@ import java.util.*;
 
 /**
  * 登录控制器
+ *
+ *   @author Hyh
  */
 @RestController
 @RequestMapping(value = "login")
@@ -51,8 +53,14 @@ public class LoginController extends BaseController<User> {
         if (Assert.notEmpty(query)) {
             return Result.fail("账户已被注册");
         }
+        if(Assert.notEmpty(user.getMedicalLicenseNumber()) && Assert.notEmpty(user.getIdCard())){
+            user.setRoleStatus(1);
 
-        user.setRoleStatus(0);
+        }else {
+            user.setRoleStatus(0);
+
+        }
+
         user.setStatus(1);
 
 //        http://localhost:8081/images/userImg/img_6.png
@@ -61,6 +69,7 @@ public class LoginController extends BaseController<User> {
         user = userService.save(user);
 
         session.setAttribute("loginUser", user);
+        session.setAttribute("user", user);
         return Result.ok(user);
     }
 
@@ -80,7 +89,7 @@ public class LoginController extends BaseController<User> {
 //        return Result.fail("密码错误");
 //    }
     @PostMapping("/login")
-    public Result login(@RequestBody User user, HttpSession session) {
+    public Result login(@RequestBody User user) {
 //        List<User> users = userService.query(user);
         User loginUser = userService.getUserByAccountAndPassword(user.getUserAccount(), user.getUserPwd());
 
@@ -88,14 +97,19 @@ public class LoginController extends BaseController<User> {
             if (loginUser.getStatus() == 0) {
                 return Result.fail("该用户已被禁用");
             }
+            HttpSession session = request.getSession();
+
 
             session.setAttribute("loginUser", loginUser);
+            session.setAttribute("user", loginUser);
+
             System.out.println("loginUser = " + loginUser);
             // 生成Token
 //            String token = JwtTokenUtil.generateToken(loginUser.getUsername());
             String token = JwtTokenUtil.generateToken(loginUser.getUserAccount());
             System.out.println("token = " + token);
 //            return Result.ok("登录成功").addData("token", token);
+
             return Result.ok(token);
         }
         if (Assert.isEmpty(userService.query(User.builder().userAccount(user.getUserAccount()).build()))) {

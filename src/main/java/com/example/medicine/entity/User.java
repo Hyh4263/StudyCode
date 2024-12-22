@@ -71,6 +71,18 @@ public class User {
     private String userTel;
 
     /**
+     * 用户医师执业证号
+     */
+    @TableField(value = "medical_license_number")
+    private String medicalLicenseNumber;
+
+    /**
+     * 用户身份证号
+     */
+    @TableField(value = "id_card")
+    private String idCard;
+
+    /**
      * 角色状态，0普通用户，1管理员，2超级管理员
      */
     private Integer roleStatus;

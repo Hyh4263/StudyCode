@@ -2,6 +2,7 @@ package com.example.medicine.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.medicine.entity.User;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,5 +12,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserDao extends BaseMapper<User> {
+
 
 }

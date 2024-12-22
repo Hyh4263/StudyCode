@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * 疾病控制器
  *
- * @author XUEW
+ * @author Hyh
  */
 @RestController
 @RequestMapping("illness")

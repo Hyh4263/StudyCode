@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * 疾病服务类
  *
- * @author XUEW
+ * @author Hyh
  */
 @Service
 public class IllnessService extends BaseService<Illness> {
